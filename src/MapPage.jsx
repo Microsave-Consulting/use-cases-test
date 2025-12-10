@@ -1,3 +1,4 @@
+// src/MapPage.jsx
 import { useEffect, useState } from "react";
 import UseCaseHeatmap from "./UseCaseHeatmap";
 
