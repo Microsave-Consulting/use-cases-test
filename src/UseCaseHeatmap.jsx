@@ -31,9 +31,9 @@ const geoUrl =
   "https://unpkg.com/world-atlas@2.0.2/countries-110m.json";
 
 export default function UseCaseHeatmap({ items }) {
-  const [hoverInfo, setHoverInfo] = useState(null);       // { iso2, name, value }
+  const [hoverInfo, setHoverInfo] = useState(null); // { iso2, name, value }
   const [hoverCentroid, setHoverCentroid] = useState(null); // [lon, lat]
-  const [tooltipPos, setTooltipPos] = useState(null);     // { x, y }
+  const [tooltipPos, setTooltipPos] = useState(null); // { x, y }
 
   // 1) Aggregate use cases per ISO2
   const { countsByCode, minValue, maxValue } = useMemo(() => {
@@ -76,7 +76,8 @@ export default function UseCaseHeatmap({ items }) {
   const colorScale = useMemo(() => {
     const values = Object.values(countsByCode);
     if (!values.length) {
-      return () => "#0a2239"; // dark fallback
+      // fallback when there is absolutely no data
+      return () => "#2a4d7a"; // lighter blue
     }
 
     const uniqueValues = Array.from(new Set(values)).sort((a, b) => a - b);
@@ -109,7 +110,7 @@ export default function UseCaseHeatmap({ items }) {
       }
     });
 
-    return (value) => colorMap[value] || "#0a2239";
+    return (value) => colorMap[value] || "#2a4d7a"; // lighter fallback
   }, [countsByCode]);
 
   // Hover helpers
@@ -136,7 +137,8 @@ export default function UseCaseHeatmap({ items }) {
       style={{
         width: "100%",
         padding: "2rem 0",
-        background: "#071a34",
+        // lighter ocean-ish outer background
+        background: "#0f2447",
         position: "relative",
       }}
     >
@@ -145,7 +147,8 @@ export default function UseCaseHeatmap({ items }) {
           width: "95vw",
           maxWidth: "1600px",
           margin: "0 auto",
-          background: "#061326",
+          // lighter inner card background
+          background: "#122b55",
           borderRadius: "12px",
           padding: "1.5rem 1rem",
           boxShadow: "0 12px 30px rgba(0,0,0,0.35)",
@@ -222,7 +225,11 @@ export default function UseCaseHeatmap({ items }) {
                       <Geography
                         key={geo.rsmKey}
                         geography={geo}
-                        fill={hasData ? colorScale(val) : "#0a2239"}
+                        fill={
+                          hasData
+                            ? colorScale(val)
+                            : "#2a4d7a" // lighter blue for non-use-case countries
+                        }
                         stroke="#1f3b73"
                         strokeWidth={0.4}
                         style={{
