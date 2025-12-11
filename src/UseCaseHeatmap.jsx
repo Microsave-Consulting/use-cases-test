@@ -9,6 +9,7 @@ import {
 import { geoCentroid } from "d3-geo";
 import countries from "i18n-iso-countries";
 import enLocale from "i18n-iso-countries/langs/en.json";
+import { useNavigate } from "react-router-dom";
 
 countries.registerLocale(enLocale);
 
@@ -27,46 +28,51 @@ function flagUrlFromIso2(iso2) {
   return `https://flagcdn.com/w40/${iso2.toLowerCase()}.png`;
 }
 
-const geoUrl =
-  "https://unpkg.com/world-atlas@2.0.2/countries-110m.json";
+const geoUrl = "https://unpkg.com/world-atlas@2.0.2/countries-110m.json";
 
 export default function UseCaseHeatmap({ items }) {
-  const [hoverInfo, setHoverInfo] = useState(null); // { iso2, name, value }
+  const [hoverInfo, setHoverInfo] = useState(null); // { iso2, label, value }
   const [hoverCentroid, setHoverCentroid] = useState(null); // [lon, lat]
   const [tooltipPos, setTooltipPos] = useState(null); // { x, y }
 
-  // 1) Aggregate use cases per ISO2
-  const { countsByCode, minValue, maxValue } = useMemo(() => {
+  const navigate = useNavigate();
+
+  // Navigate to the library, pre-filtered by this country (by name)
+  const goToCountry = (info) => {
+    if (!info?.label) return;
+    const label = info.label;
+    navigate(`/library?country=${encodeURIComponent(label)}`);
+  };
+
+  // 1) Aggregate use cases per ISO2, and remember the data-country label we saw
+  const { countsByCode, labelByIso, minValue, maxValue } = useMemo(() => {
     const counts = {};
+    const labels = {};
 
     items.forEach((row) => {
       const names = splitValues(row.Country || "");
       names.forEach((n) => {
-        let name = n.trim();
-        if (!name) return;
+        let nameFromData = n.trim();
+        if (!nameFromData) return;
 
-        const lower = name.toLowerCase();
-        if (lower === "uk") name = "United Kingdom";
-        if (
-          lower === "usa" ||
-          lower === "united states" ||
-          lower === "u.s." ||
-          lower === "u.s.a."
-        ) {
-          name = "United States of America";
-        }
-
-        const iso2 = countries.getAlpha2Code(name, "en");
+        // Try to resolve ISO2 using the data label
+        const iso2 = countries.getAlpha2Code(nameFromData, "en");
         if (!iso2) return;
 
         const code = iso2.toUpperCase();
         counts[code] = (counts[code] || 0) + 1;
+
+        // Remember a canonical label straight from the data
+        if (!labels[code]) {
+          labels[code] = nameFromData;
+        }
       });
     });
 
     const vals = Object.values(counts);
     return {
       countsByCode: counts,
+      labelByIso: labels,
       minValue: vals.length ? Math.min(...vals) : 0,
       maxValue: vals.length ? Math.max(...vals) : 0,
     };
@@ -178,12 +184,12 @@ export default function UseCaseHeatmap({ items }) {
               const centroidByIso = {};
               geographies.forEach((geo) => {
                 const p = geo.properties || {};
-                const name = p.name || p.NAME || p.ADMIN || "Unknown";
+                const geoName = p.name || p.NAME || p.ADMIN || "Unknown";
 
                 let iso2 =
                   (p.ISO_A2 || p.iso_a2 || p.ISO2 || "").toUpperCase();
-                if (!iso2 && name !== "Unknown") {
-                  const resolved = countries.getAlpha2Code(name, "en");
+                if (!iso2 && geoName !== "Unknown") {
+                  const resolved = countries.getAlpha2Code(geoName, "en");
                   if (resolved) iso2 = resolved.toUpperCase();
                 }
                 if (!iso2) return;
@@ -195,7 +201,7 @@ export default function UseCaseHeatmap({ items }) {
                   !Number.isNaN(c[1]) &&
                   !centroidByIso[iso2]
                 ) {
-                  centroidByIso[iso2] = { centroid: c, name };
+                  centroidByIso[iso2] = { centroid: c, geoName };
                 }
               });
 
@@ -204,67 +210,83 @@ export default function UseCaseHeatmap({ items }) {
                   {/* 4) Countries with discrete turquoise colors */}
                   {geographies.map((geo) => {
                     const p = geo.properties || {};
-                    const name = p.name || p.NAME || p.ADMIN || "Unknown";
+                    const geoName = p.name || p.NAME || p.ADMIN || "Unknown";
 
                     let iso2 =
                       (p.ISO_A2 || p.iso_a2 || p.ISO2 || "").toUpperCase();
-                    if (!iso2 && name !== "Unknown") {
-                      const resolved = countries.getAlpha2Code(name, "en");
+                    if (!iso2 && geoName !== "Unknown") {
+                      const resolved = countries.getAlpha2Code(geoName, "en");
                       if (resolved) iso2 = resolved.toUpperCase();
                     }
 
                     const val = iso2 ? countsByCode[iso2] || 0 : 0;
                     const hasData = val > 0;
 
-                    const info =
-                      hasData && iso2
-                        ? { iso2, name, value: val }
-                        : null;
+                    if (!hasData) {
+                      return (
+                        <Geography
+                          key={geo.rsmKey}
+                          geography={geo}
+                          fill="#2a4d7a"
+                          stroke="#1f3b73"
+                          strokeWidth={0.4}
+                          style={{
+                            default: { outline: "none" },
+                            hover: {
+                              outline: "none",
+                              cursor: "default",
+                            },
+                          }}
+                          onMouseLeave={hideHover}
+                        />
+                      );
+                    }
+
+                    const centroidInfo = centroidByIso[iso2] || {};
+                    const labelFromData = labelByIso[iso2];
+                    const displayLabel = labelFromData || geoName;
+
+                    const info = {
+                      iso2,
+                      label: displayLabel,
+                      value: val,
+                    };
 
                     return (
                       <Geography
                         key={geo.rsmKey}
                         geography={geo}
-                        fill={
-                          hasData
-                            ? colorScale(val)
-                            : "#2a4d7a" // lighter blue for non-use-case countries
-                        }
+                        fill={colorScale(val)}
                         stroke="#1f3b73"
                         strokeWidth={0.4}
                         style={{
                           default: { outline: "none" },
                           hover: {
                             outline: "none",
-                            cursor: hasData ? "pointer" : "default",
-                            opacity: hasData ? 0.9 : 1,
+                            cursor: "pointer",
+                            opacity: 0.9,
                           },
                         }}
                         onMouseEnter={(e) =>
-                          info &&
-                          showHover(
-                            info,
-                            centroidByIso[info.iso2]?.centroid,
-                            e
-                          )
+                          showHover(info, centroidInfo.centroid, e)
                         }
                         onMouseMove={(e) =>
-                          info &&
-                          showHover(
-                            info,
-                            centroidByIso[info.iso2]?.centroid,
-                            e
-                          )
+                          showHover(info, centroidInfo.centroid, e)
                         }
                         onMouseLeave={hideHover}
+                        onClick={() => goToCountry(info)}
                       />
                     );
                   })}
 
-                  {/* 5) Hover-only flag pin */}
+                  {/* 5) Hover-only flag pin (also clickable) */}
                   {hoverInfo && hoverCentroid && (
                     <Marker coordinates={hoverCentroid}>
-                      <g transform="translate(0, -30)">
+                      <g
+                        transform="translate(0, -30)"
+                        onClick={() => goToCountry(hoverInfo)}
+                        style={{ cursor: "pointer" }}
+                      >
                         {/* Pin stem */}
                         <line
                           x1="0"
@@ -342,7 +364,7 @@ export default function UseCaseHeatmap({ items }) {
               whiteSpace: "nowrap",
             }}
           >
-            <strong>{hoverInfo.name}</strong> • {hoverInfo.value} use case
+            <strong>{hoverInfo.label}</strong> • {hoverInfo.value} use case
             {hoverInfo.value === 1 ? "" : "s"}
           </div>
         )}

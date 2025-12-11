@@ -1,0 +1,51 @@
+[
+  {
+    "id": "region",
+    "label": "Region / Sub Region",
+    "field": "Region",
+    "usesSubregion": true,
+    "multiValue": false
+  },
+  {
+    "id": "sector",
+    "label": "Sector",
+    "field": "Sectors",
+    "usesSubregion": false,
+    "multiValue": true
+  },
+  {
+    "id": "country",
+    "label": "Country",
+    "field": "Country",
+    "usesSubregion": false,
+    "multiValue": true
+  },
+  {
+    "id": "maturity",
+    "label": "Maturity",
+    "field": "MaturityLevel",
+    "usesSubregion": false,
+    "multiValue": false
+  },
+  {
+    "id": "accessibility",
+    "label": "Accessibility",
+    "field": "Accessibility",
+    "usesSubregion": false,
+    "multiValue": true
+  },
+  {
+    "id": "assuranceLevel",
+    "label": "Assurance Level",
+    "field": "AssuranceLevels",
+    "usesSubregion": false,
+    "multiValue": true
+  },
+  {
+    "id": "authModality",
+    "label": "Auth Modality",
+    "field": "AuthModalities",
+    "usesSubregion": false,
+    "multiValue": true
+  }
+]
