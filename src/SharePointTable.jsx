@@ -121,7 +121,7 @@ export default function SharePointTable() {
   if (!items.length) return <div>No data.</div>;
 
   return (
-    <div style={{ padding: "1rem" }}>
+    <div style={{ padding: "3rem 4rem" }}>
       <h2>Use-case Library</h2>
 
       {/* Checkbox Filters */}
