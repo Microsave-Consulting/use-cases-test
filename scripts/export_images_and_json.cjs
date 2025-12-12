@@ -41,7 +41,6 @@ for (const it of items) {
   const folder = path.join(imagesRoot, String(id));
   fs.mkdirSync(folder, { recursive: true });
 
-  // Standardize output name
   const outFile = path.join(folder, "cover.jpg");
 
   const url = `${baseImageUrl}?itemId=${encodeURIComponent(id)}&code=${encodeURIComponent(
