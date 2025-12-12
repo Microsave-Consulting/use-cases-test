@@ -19,14 +19,19 @@
     "AssuranceLevels": "Authentication Assurance Level 2, Identity Assurance Level 2",
     "FundedBy": null,
     "Remarks": "Employment management platform using digital ID to verify diplomas, reduce fraud, and facilitate job matching with AI-driven recommendations",
+    "Image": "{\"fileName\":\"Reserved_ImageAttachment_[5]_[Image][32]_[eb7f074bee3447f2ad8811b6e8573616][1]_[1].jpg\",\"originalImageName\":\"resize\"}",
     "ID": 96,
-    "Modified": "2025-12-11T09:54:27Z",
+    "Modified": "2025-12-12T04:15:31Z",
     "Created": "2025-12-11T09:54:27Z",
     "AuthorId": 12,
     "EditorId": 12,
-    "OData__UIVersionString": "1.0",
-    "Attachments": false,
-    "GUID": "fb1ac186-a255-4fdf-9f0d-1b36617269e4"
+    "OData__UIVersionString": "3.0",
+    "Attachments": true,
+    "GUID": "fb1ac186-a255-4fdf-9f0d-1b36617269e4",
+    "Images": [
+      "/images/use-cases/96/cover.jpg"
+    ],
+    "CoverImage": "/images/use-cases/96/cover.jpg"
   },
   {
     "FileSystemObjectType": 0,
@@ -48,6 +53,7 @@
     "AssuranceLevels": "Authentication Assurance Level 1, Identity Assurance Level 2",
     "FundedBy": null,
     "Remarks": "Digital platform connecting farmers to refrigerated solar warehouses and online marketplace to reduce post-harvest losses",
+    "Image": null,
     "ID": 95,
     "Modified": "2025-12-11T09:54:25Z",
     "Created": "2025-12-11T09:54:25Z",
@@ -55,7 +61,9 @@
     "EditorId": 12,
     "OData__UIVersionString": "1.0",
     "Attachments": false,
-    "GUID": "df2543a7-3a18-40e1-aa17-f281177b9160"
+    "GUID": "df2543a7-3a18-40e1-aa17-f281177b9160",
+    "Images": [],
+    "CoverImage": null
   },
   {
     "FileSystemObjectType": 0,
@@ -77,6 +85,7 @@
     "AssuranceLevels": "Authentication Assurance Level 2, Identity Assurance Level 2",
     "FundedBy": null,
     "Remarks": "AI-powered platform for smallholder farmers providing personalized agricultural advice, disease detection, weather forecasts, and access to credit",
+    "Image": null,
     "ID": 94,
     "Modified": "2025-12-11T09:54:23Z",
     "Created": "2025-12-11T09:54:23Z",
@@ -84,7 +93,9 @@
     "EditorId": 12,
     "OData__UIVersionString": "1.0",
     "Attachments": false,
-    "GUID": "ff2a6d91-e464-4fc9-a2a0-4099a1ae1edc"
+    "GUID": "ff2a6d91-e464-4fc9-a2a0-4099a1ae1edc",
+    "Images": [],
+    "CoverImage": null
   },
   {
     "FileSystemObjectType": 0,
@@ -106,6 +117,7 @@
     "AssuranceLevels": "Authentication Assurance Level 2, Identity Assurance Level 2",
     "FundedBy": null,
     "Remarks": "Digital platform for farmer identification enabling access to subsidies, loans, and market linkages; includes farm monitoring dashboard",
+    "Image": null,
     "ID": 90,
     "Modified": "2025-12-11T09:29:17Z",
     "Created": "2025-12-11T09:29:17Z",
@@ -113,7 +125,9 @@
     "EditorId": 12,
     "OData__UIVersionString": "1.0",
     "Attachments": false,
-    "GUID": "2a5c78e1-59a5-4a51-bfa5-3999ee3e1c91"
+    "GUID": "2a5c78e1-59a5-4a51-bfa5-3999ee3e1c91",
+    "Images": [],
+    "CoverImage": null
   },
   {
     "FileSystemObjectType": 0,
@@ -135,6 +149,7 @@
     "AssuranceLevels": "Authentication Assurance Level 3, Identity Assurance Level 3",
     "FundedBy": null,
     "Remarks": "Secure electronic voting with dual verification (CNI + fingerprint), blockchain vote storage, solar-powered tablets for rural accessibility.",
+    "Image": null,
     "ID": 89,
     "Modified": "2025-12-11T09:29:16Z",
     "Created": "2025-12-11T09:29:16Z",
@@ -142,7 +157,9 @@
     "EditorId": 12,
     "OData__UIVersionString": "1.0",
     "Attachments": false,
-    "GUID": "37c3802a-fc40-482f-a48a-f5aebc6e7988"
+    "GUID": "37c3802a-fc40-482f-a48a-f5aebc6e7988",
+    "Images": [],
+    "CoverImage": null
   },
   {
     "FileSystemObjectType": 0,
@@ -164,6 +181,7 @@
     "AssuranceLevels": "Authentication Assurance Level 2, Identity Assurance Level 2",
     "FundedBy": null,
     "Remarks": "Digital platform for young entrepreneurs with AI-driven mentorship, blockchain transactions, microloans, crowdfunding, and skills development.",
+    "Image": null,
     "ID": 88,
     "Modified": "2025-12-11T09:29:14Z",
     "Created": "2025-12-11T09:29:14Z",
@@ -171,7 +189,9 @@
     "EditorId": 12,
     "OData__UIVersionString": "1.0",
     "Attachments": false,
-    "GUID": "7de15279-1da5-4f5f-a309-f5c87d3ac315"
+    "GUID": "7de15279-1da5-4f5f-a309-f5c87d3ac315",
+    "Images": [],
+    "CoverImage": null
   },
   {
     "FileSystemObjectType": 0,
@@ -193,6 +213,7 @@
     "AssuranceLevels": "Authentication Assurance Level 3, Identity Assurance Level 3",
     "FundedBy": "World Bank",
     "Remarks": "Integrates digital ID with NINEA tax system, uses blockchain and AI for fraud detection, cross-agency data sharing for compliance monitoring.",
+    "Image": null,
     "ID": 87,
     "Modified": "2025-12-11T09:29:13Z",
     "Created": "2025-12-11T09:29:13Z",
@@ -200,7 +221,9 @@
     "EditorId": 12,
     "OData__UIVersionString": "1.0",
     "Attachments": false,
-    "GUID": "cc64004c-7803-4b9b-b298-2d0efe03833e"
+    "GUID": "cc64004c-7803-4b9b-b298-2d0efe03833e",
+    "Images": [],
+    "CoverImage": null
   },
   {
     "FileSystemObjectType": 0,
@@ -222,6 +245,7 @@
     "AssuranceLevels": "Authentication Assurance Level 1, Identity Assurance Level 2",
     "FundedBy": "Government MDAs, Private Organisations",
     "Remarks": "Features include agricultural marketplace with personalized online stores, resource hub with agricultural news and training materials, AI chatbot integration for real-time assistance, mobile-first design with local language support, and government/financial service integration",
+    "Image": null,
     "ID": 86,
     "Modified": "2025-12-11T09:29:11Z",
     "Created": "2025-12-11T09:29:11Z",
@@ -229,7 +253,9 @@
     "EditorId": 12,
     "OData__UIVersionString": "1.0",
     "Attachments": false,
-    "GUID": "5918d1e5-3476-42b3-9987-8b8dc85a0b16"
+    "GUID": "5918d1e5-3476-42b3-9987-8b8dc85a0b16",
+    "Images": [],
+    "CoverImage": null
   },
   {
     "FileSystemObjectType": 0,
@@ -251,6 +277,7 @@
     "AssuranceLevels": "Identity Assurance Level 2, Authentication Assurance Level 2",
     "FundedBy": null,
     "Remarks": "Features include secure authentication through MOSIP verification, document selection and form completion, OCR processing for data extraction and validation, authority validation with real-time or deferred processing, secure PDF generation with steganography certification, and 24/7 AI chatbot support.",
+    "Image": null,
     "ID": 85,
     "Modified": "2025-12-11T09:29:09Z",
     "Created": "2025-12-11T09:29:09Z",
@@ -258,7 +285,9 @@
     "EditorId": 12,
     "OData__UIVersionString": "1.0",
     "Attachments": false,
-    "GUID": "aba1889a-55a7-4797-b656-82f79d95f989"
+    "GUID": "aba1889a-55a7-4797-b656-82f79d95f989",
+    "Images": [],
+    "CoverImage": null
   },
   {
     "FileSystemObjectType": 0,
@@ -280,6 +309,7 @@
     "AssuranceLevels": "Identity Assurance Level 2, Authentication Assurance Level 1",
     "FundedBy": "Government MDAs",
     "Remarks": "EduSenegal ID is a digital identity platform connecting students, schools, and employers to bridge the gap between education and employment. Features include centralized academic records input by schools, student profile empowerment with skills and certifications, employer job posting, and verified profile access",
+    "Image": null,
     "ID": 84,
     "Modified": "2025-12-11T09:29:07Z",
     "Created": "2025-12-11T09:29:07Z",
@@ -287,7 +317,9 @@
     "EditorId": 12,
     "OData__UIVersionString": "1.0",
     "Attachments": false,
-    "GUID": "35216a72-3cd4-4159-8999-10e0df817ffa"
+    "GUID": "35216a72-3cd4-4159-8999-10e0df817ffa",
+    "Images": [],
+    "CoverImage": null
   },
   {
     "FileSystemObjectType": 0,
@@ -309,6 +341,7 @@
     "AssuranceLevels": "Authentication Assurance Level 2, Identity Assurance Level 2",
     "FundedBy": "Government MDAs",
     "Remarks": "Digital driver's license leveraging MOSIP to provide secure, efficient, and transparent licensing system. Features include online application, renewal, and license management capabilities, integration with MOSIP's identity management",
+    "Image": null,
     "ID": 83,
     "Modified": "2025-12-11T09:29:05Z",
     "Created": "2025-12-11T09:29:05Z",
@@ -316,7 +349,9 @@
     "EditorId": 12,
     "OData__UIVersionString": "1.0",
     "Attachments": false,
-    "GUID": "7f0ea1b6-96cc-4698-9e3f-322713aec254"
+    "GUID": "7f0ea1b6-96cc-4698-9e3f-322713aec254",
+    "Images": [],
+    "CoverImage": null
   },
   {
     "FileSystemObjectType": 0,
@@ -338,6 +373,7 @@
     "AssuranceLevels": "Authentication Assurance Level 1, Identity Assurance Level 2",
     "FundedBy": null,
     "Remarks": null,
+    "Image": null,
     "ID": 82,
     "Modified": "2025-12-11T09:29:03Z",
     "Created": "2025-12-11T09:29:03Z",
@@ -345,7 +381,9 @@
     "EditorId": 12,
     "OData__UIVersionString": "1.0",
     "Attachments": false,
-    "GUID": "73348fcc-5fcd-4fb0-a515-f4c7ed58e4b1"
+    "GUID": "73348fcc-5fcd-4fb0-a515-f4c7ed58e4b1",
+    "Images": [],
+    "CoverImage": null
   },
   {
     "FileSystemObjectType": 0,
@@ -367,6 +405,7 @@
     "AssuranceLevels": "Identity Assurance Level 2, Authentication Assurance Level 2",
     "FundedBy": "Government MDAs",
     "Remarks": "SunuAssistance is an integrated solution leveraging Digital ID and AI to enhance emergency services efficiency. Features include MOSIP-based unique Digital ID for users, emergency alert system with automatic geolocation sharing, AI assistant providing tailored first-aid instructions, real-time tracking of assistance progress, and emergency services dashboard with prioritized alerts",
+    "Image": null,
     "ID": 81,
     "Modified": "2025-12-11T09:29:01Z",
     "Created": "2025-12-11T09:29:01Z",
@@ -374,7 +413,9 @@
     "EditorId": 12,
     "OData__UIVersionString": "1.0",
     "Attachments": false,
-    "GUID": "c6290b3f-e757-4f39-a277-cebf98fa23fd"
+    "GUID": "c6290b3f-e757-4f39-a277-cebf98fa23fd",
+    "Images": [],
+    "CoverImage": null
   },
   {
     "FileSystemObjectType": 0,
@@ -396,6 +437,7 @@
     "AssuranceLevels": "Authentication Assurance Level 2, Identity Assurance Level 2",
     "FundedBy": "ID authority",
     "Remarks": "Secure MoMo leverages MOSIP to introduce biometric verification into SIM card purchase and mobile money registration processes. Features include biometric capture at point of SIM purchase, real-time authentication during registration, fraud monitoring with alert systems, and cross-verification of biometrics and demographic data",
+    "Image": null,
     "ID": 80,
     "Modified": "2025-12-11T09:29:00Z",
     "Created": "2025-12-11T09:29:00Z",
@@ -403,7 +445,9 @@
     "EditorId": 12,
     "OData__UIVersionString": "1.0",
     "Attachments": false,
-    "GUID": "4f166c12-ec82-42a1-a091-b1960e126cb4"
+    "GUID": "4f166c12-ec82-42a1-a091-b1960e126cb4",
+    "Images": [],
+    "CoverImage": null
   },
   {
     "FileSystemObjectType": 0,
@@ -425,6 +469,7 @@
     "AssuranceLevels": "Authentication Assurance Level 3, Identity Assurance Level 3",
     "FundedBy": null,
     "Remarks": "Features include biometric registration, integrated farmer registry, easy resource access, market connections, blockchain for tamper-proof records, AI tools for personalized advice, IoT sensors for monitoring, and Smart Village Hubs with digital kiosks.",
+    "Image": null,
     "ID": 79,
     "Modified": "2025-12-11T09:28:56Z",
     "Created": "2025-12-11T09:28:56Z",
@@ -432,7 +477,9 @@
     "EditorId": 12,
     "OData__UIVersionString": "1.0",
     "Attachments": false,
-    "GUID": "2afff62a-3513-45a6-84c8-133bc9923d7e"
+    "GUID": "2afff62a-3513-45a6-84c8-133bc9923d7e",
+    "Images": [],
+    "CoverImage": null
   },
   {
     "FileSystemObjectType": 0,
@@ -454,6 +501,7 @@
     "AssuranceLevels": null,
     "FundedBy": null,
     "Remarks": "Digital platform for property verification and transfer. Digital IDs for property ownership verification, blockchain for immutable record storage, smart contracts for automated processes, AI for fraud detection",
+    "Image": null,
     "ID": 78,
     "Modified": "2025-12-11T09:28:55Z",
     "Created": "2025-12-11T09:28:55Z",
@@ -461,7 +509,9 @@
     "EditorId": 12,
     "OData__UIVersionString": "1.0",
     "Attachments": false,
-    "GUID": "e372ebfb-9ab3-46dd-994b-8f6d2ddb6b23"
+    "GUID": "e372ebfb-9ab3-46dd-994b-8f6d2ddb6b23",
+    "Images": [],
+    "CoverImage": null
   },
   {
     "FileSystemObjectType": 0,
@@ -483,6 +533,7 @@
     "AssuranceLevels": "Identity Assurance Level 3, Authentication Assurance Level 3",
     "FundedBy": "Government MDAs",
     "Remarks": "Integrates with existing Edahabia system to eliminate physical cards and PIN dependency",
+    "Image": null,
     "ID": 77,
     "Modified": "2025-12-11T09:28:53Z",
     "Created": "2025-12-11T09:28:53Z",
@@ -490,7 +541,9 @@
     "EditorId": 12,
     "OData__UIVersionString": "1.0",
     "Attachments": false,
-    "GUID": "6e16ac98-70f7-435f-ab6d-c8c1e6963e4f"
+    "GUID": "6e16ac98-70f7-435f-ab6d-c8c1e6963e4f",
+    "Images": [],
+    "CoverImage": null
   },
   {
     "FileSystemObjectType": 0,
@@ -512,6 +565,7 @@
     "AssuranceLevels": "Authentication Assurance Level 2",
     "FundedBy": null,
     "Remarks": null,
+    "Image": null,
     "ID": 76,
     "Modified": "2025-12-11T09:28:52Z",
     "Created": "2025-12-11T09:28:52Z",
@@ -519,7 +573,9 @@
     "EditorId": 12,
     "OData__UIVersionString": "1.0",
     "Attachments": false,
-    "GUID": "854480b2-418d-4eba-987d-aba6dae52224"
+    "GUID": "854480b2-418d-4eba-987d-aba6dae52224",
+    "Images": [],
+    "CoverImage": null
   },
   {
     "FileSystemObjectType": 0,
@@ -541,6 +597,7 @@
     "AssuranceLevels": "Identity Assurance Level 2, Authentication Assurance Level 2",
     "FundedBy": "Government MDAs",
     "Remarks": "A digital platform that uses single sign-on for farmer identity verification and machine learning for data-driven, targeted subsidy allocation—ensuring secure audits and reducing fraud, elite capture, and misallocation.  Fraud Elimination in Subsidy Programs using single sign on",
+    "Image": null,
     "ID": 75,
     "Modified": "2025-12-11T09:28:50Z",
     "Created": "2025-12-11T09:28:50Z",
@@ -548,7 +605,9 @@
     "EditorId": 12,
     "OData__UIVersionString": "1.0",
     "Attachments": false,
-    "GUID": "edbb20a1-42e4-4c2f-bedc-163728ebd315"
+    "GUID": "edbb20a1-42e4-4c2f-bedc-163728ebd315",
+    "Images": [],
+    "CoverImage": null
   },
   {
     "FileSystemObjectType": 0,
@@ -570,6 +629,7 @@
     "AssuranceLevels": "Authentication Assurance Level 1, Identity Assurance Level 2",
     "FundedBy": null,
     "Remarks": "By integrating biometric identity verification, the system provides stakeholders with real-time, reliable data for planning, incentive distribution, financial services, and supply chain transparency",
+    "Image": null,
     "ID": 74,
     "Modified": "2025-12-11T09:28:48Z",
     "Created": "2025-12-11T09:28:48Z",
@@ -577,7 +637,9 @@
     "EditorId": 12,
     "OData__UIVersionString": "1.0",
     "Attachments": false,
-    "GUID": "56852f08-a611-48cc-80b9-b3a6c45fc6d8"
+    "GUID": "56852f08-a611-48cc-80b9-b3a6c45fc6d8",
+    "Images": [],
+    "CoverImage": null
   },
   {
     "FileSystemObjectType": 0,
@@ -599,6 +661,7 @@
     "AssuranceLevels": "Authentication Assurance Level 1, Identity Assurance Level 2",
     "FundedBy": "ID authority, Government MDAs",
     "Remarks": "INJI Certify will be used to create a Verifiable Credentials (VC) or Digital ID for the farmer. Enables cross-border, trusted transactions through identity-based trust and product traceability.",
+    "Image": null,
     "ID": 73,
     "Modified": "2025-12-11T09:28:47Z",
     "Created": "2025-12-11T09:28:47Z",
@@ -606,7 +669,9 @@
     "EditorId": 12,
     "OData__UIVersionString": "1.0",
     "Attachments": false,
-    "GUID": "007a291b-7163-4e9e-bfa0-717f0d1ce44d"
+    "GUID": "007a291b-7163-4e9e-bfa0-717f0d1ce44d",
+    "Images": [],
+    "CoverImage": null
   },
   {
     "FileSystemObjectType": 0,
@@ -628,6 +693,7 @@
     "AssuranceLevels": "Authentication Assurance Level 2, Identity Assurance Level 2",
     "FundedBy": "Government MDAs",
     "Remarks": "A pilot in Zagora Province demonstrated tangible results: 50 hectares of unregistered land were formalized, 15 solar pumps reduced diesel consumption by 12,000 liters annually, and a solar microgrid brought electricity to a school and clinic serving 500 villagers.",
+    "Image": null,
     "ID": 72,
     "Modified": "2025-12-11T09:28:45Z",
     "Created": "2025-12-11T09:28:45Z",
@@ -635,7 +701,9 @@
     "EditorId": 12,
     "OData__UIVersionString": "1.0",
     "Attachments": false,
-    "GUID": "0762db47-8af4-4b7b-a459-1c47aef6e3f0"
+    "GUID": "0762db47-8af4-4b7b-a459-1c47aef6e3f0",
+    "Images": [],
+    "CoverImage": null
   },
   {
     "FileSystemObjectType": 0,
@@ -657,6 +725,7 @@
     "AssuranceLevels": "Authentication Assurance Level 2, Identity Assurance Level 2",
     "FundedBy": "Government MDAs, Private Organisations",
     "Remarks": "Healthcare providers can access a patient's complete medical history with a simple scan of their national ID or birth certificate",
+    "Image": null,
     "ID": 71,
     "Modified": "2025-12-11T09:28:44Z",
     "Created": "2025-12-11T09:28:44Z",
@@ -664,7 +733,9 @@
     "EditorId": 12,
     "OData__UIVersionString": "1.0",
     "Attachments": false,
-    "GUID": "0da142de-3233-41b8-b931-613e1a351efd"
+    "GUID": "0da142de-3233-41b8-b931-613e1a351efd",
+    "Images": [],
+    "CoverImage": null
   },
   {
     "FileSystemObjectType": 0,
@@ -686,6 +757,7 @@
     "AssuranceLevels": "Authentication Assurance Level 2, Identity Assurance Level 3",
     "FundedBy": null,
     "Remarks": "Automates face authentication to reduce human error with 99.55% accuracy. Designed specifically for the African context, unlike existing solutions",
+    "Image": null,
     "ID": 70,
     "Modified": "2025-12-11T09:28:41Z",
     "Created": "2025-12-11T09:28:41Z",
@@ -693,7 +765,9 @@
     "EditorId": 12,
     "OData__UIVersionString": "1.0",
     "Attachments": false,
-    "GUID": "bb0b58d5-4e99-45d6-a53a-23f4c652ccf3"
+    "GUID": "bb0b58d5-4e99-45d6-a53a-23f4c652ccf3",
+    "Images": [],
+    "CoverImage": null
   },
   {
     "FileSystemObjectType": 0,
@@ -715,6 +789,7 @@
     "AssuranceLevels": "Authentication Assurance Level 1, Identity Assurance Level 2",
     "FundedBy": "Private Organisations",
     "Remarks": "Biosensors, Uses microfluidic and spectroscopic sensor technology, AI-driven skin analysis",
+    "Image": null,
     "ID": 69,
     "Modified": "2025-12-11T09:28:39Z",
     "Created": "2025-12-11T09:28:39Z",
@@ -722,7 +797,9 @@
     "EditorId": 12,
     "OData__UIVersionString": "1.0",
     "Attachments": false,
-    "GUID": "d1eb819a-9ba6-41cc-90fa-ce59ac9e7b39"
+    "GUID": "d1eb819a-9ba6-41cc-90fa-ce59ac9e7b39",
+    "Images": [],
+    "CoverImage": null
   },
   {
     "FileSystemObjectType": 0,
@@ -744,6 +821,7 @@
     "AssuranceLevels": "Authentication Assurance Level 1, Identity Assurance Level 2",
     "FundedBy": null,
     "Remarks": "NOURID+ creates a unified Digital Energy ID by merging official data, allowing for real-time monitoring and smart subsidy access. In partnership with SRM (Société Régionale Multiservices), it advances\nMorocco’s shift from private utilities to inclusive, public-first energy infrastructure",
+    "Image": null,
     "ID": 68,
     "Modified": "2025-12-11T09:28:38Z",
     "Created": "2025-12-11T09:28:38Z",
@@ -751,7 +829,9 @@
     "EditorId": 12,
     "OData__UIVersionString": "1.0",
     "Attachments": false,
-    "GUID": "ec10d86f-077d-4ab3-a17b-a8b93e8bcf97"
+    "GUID": "ec10d86f-077d-4ab3-a17b-a8b93e8bcf97",
+    "Images": [],
+    "CoverImage": null
   },
   {
     "FileSystemObjectType": 0,
@@ -773,6 +853,7 @@
     "AssuranceLevels": "Identity Assurance Level 2, Authentication Assurance Level 1",
     "FundedBy": null,
     "Remarks": "Manual tracking and outdated contacts cause missed student loan repayments. BoSDID detects graduate employment by linking digital ID and tax number to trigger repayment workflows, sustaining and recycling Botswana's student fund.",
+    "Image": null,
     "ID": 67,
     "Modified": "2025-12-11T09:28:36Z",
     "Created": "2025-12-11T09:28:36Z",
@@ -780,6 +861,8 @@
     "EditorId": 12,
     "OData__UIVersionString": "1.0",
     "Attachments": false,
-    "GUID": "3852b01f-1bd0-4115-8bf7-f1aa8ed72264"
+    "GUID": "3852b01f-1bd0-4115-8bf7-f1aa8ed72264",
+    "Images": [],
+    "CoverImage": null
   }
 ]
