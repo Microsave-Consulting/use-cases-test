@@ -100,7 +100,7 @@ export default function UseCaseDetail() {
     <div className="ucd-page">
       {/* Breadcrumb */}
       <nav className="ucd-breadcrumb">
-        <Link to="/use-case-library">Use case library</Link>
+        <Link to="/library">Use case library</Link>
         <span className="ucd-crumb-sep">›</span>
         <span className="ucd-crumb-current">{title}</span>
       </nav>
