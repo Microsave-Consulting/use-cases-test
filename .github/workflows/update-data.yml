@@ -2,13 +2,13 @@ name: Update SharePoint data JSON and deploy site
 
 on:
   schedule:
-    - cron: "0 0 * * *"   # Runs once a day at midnight UTC
+    - cron: "0 0 * * *"
   workflow_dispatch:
 
 permissions:
-  contents: write        # for committing JSON/images
-  pages: write           # for deploying to Pages
-  id-token: write        # for deploy-pages OIDC auth
+  contents: write
+  pages: write
+  id-token: write
 
 jobs:
   update-json:
@@ -21,6 +21,11 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
       - name: Fetch data JSON from Azure Function (raw)
         run: |
           mkdir -p public/data
@@ -31,81 +36,10 @@ jobs:
 
       - name: Export cover images and build final JSON
         run: |
-          cat > export_images_and_json.js << "NODE"
-          const fs = require("fs");
-          const path = require("path");
-          const { execFileSync } = require("child_process");
-
-          const rawPath = "public/data/use_cases.raw.json";
-          const outJsonPath = "public/data/use_cases.json";
-
-          const items = JSON.parse(fs.readFileSync(rawPath, "utf8"));
-
-          const baseImageUrl = process.env.AZURE_FUNC_URL_IMAGE;
-          const key = process.env.AZURE_FUNC_KEY;
-
-          const imagesRoot = path.join("public", "images", "use-cases");
-          fs.mkdirSync(imagesRoot, { recursive: true });
-
-          let downloaded = 0;
-          let skipped = 0;
-          let failed = 0;
-
-          for (const it of items) {
-            const id = it.ID ?? it.Id ?? it.id;
-            if (!id) continue;
-
-            if (!it.Attachments) {
-              it.Images = [];
-              it.CoverImage = null;
-              skipped++;
-              continue;
-            }
-
-            const folder = path.join(imagesRoot, String(id));
-            fs.mkdirSync(folder, { recursive: true });
-
-            const outFile = path.join(folder, "cover.jpg");
-
-            const url =
-              `${baseImageUrl}?itemId=${encodeURIComponent(id)}&code=${encodeURIComponent(key)}`;
-
-            try {
-              execFileSync("curl", ["-sL", url, "-o", outFile], { stdio: "inherit" });
-              const st = fs.statSync(outFile);
-              if (st.size === 0) throw new Error("Downloaded file is empty");
-
-              const rel = `/images/use-cases/${id}/cover.jpg`;
-              it.Images = [rel];
-              it.CoverImage = rel;
-
-              downloaded++;
-            } catch (e) {
-              try { if (fs.existsSync(outFile)) fs.unlinkSync(outFile); } catch {}
-              it.Images = [];
-              it.CoverImage = null;
-              failed++;
-              console.error(`Cover image export failed for ID=${id}: ${e.message}`);
-            }
-          }
-
-          fs.writeFileSync(outJsonPath, JSON.stringify(items, null, 2));
-          console.log(`Wrote ${outJsonPath} (${items.length} items)`);
-          console.log(`Images: downloaded=${downloaded}, skipped(no attachments)=${skipped}, failed=${failed}`);
-          NODE
-
-          node export_images_and_json.js
-          rm -f export_images_and_json.js
+          node scripts/export_images_and_json.js
         env:
           AZURE_FUNC_URL_IMAGE: ${{ secrets.AZURE_FUNC_URL_IMAGE }}
           AZURE_FUNC_KEY: ${{ secrets.AZURE_FUNC_KEY }}
-
-      - name: Optional: pretty-print JSON with jq
-        run: |
-          if command -v jq >/dev/null 2>&1; then
-            tmp=$(mktemp)
-            jq '.' public/data/use_cases.json > "$tmp" && mv "$tmp" public/data/use_cases.json
-          fi
 
       - name: Commit and push changes (JSON + images)
         id: commit
@@ -113,24 +47,24 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-          # Do NOT commit raw file
           rm -f public/data/use_cases.raw.json
 
           git add public/data/use_cases.json public/images/use-cases
 
           if git diff --cached --quiet; then
             echo "No changes"
-            echo "any_changed=false" >> $GITHUB_OUTPUT
+            echo "any_changed=false" >> "$GITHUB_OUTPUT"
           else
             git commit -m "Update JSON snapshot and cover images"
             git push
-            echo "any_changed=true" >> $GITHUB_OUTPUT
+            echo "any_changed=true" >> "$GITHUB_OUTPUT"
           fi
 
   build-and-deploy:
     needs: update-json
     if: needs.update-json.outputs.any_changed == 'true'
     runs-on: ubuntu-latest
+
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
