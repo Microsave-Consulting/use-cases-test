@@ -19,19 +19,17 @@
     "AssuranceLevels": "Authentication Assurance Level 2, Identity Assurance Level 2",
     "FundedBy": null,
     "Remarks": "Employment management platform using digital ID to verify diplomas, reduce fraud, and facilitate job matching with AI-driven recommendations",
-    "Image": "{\"fileName\":\"Reserved_ImageAttachment_[5]_[Image][32]_[eb7f074bee3447f2ad8811b6e8573616][1]_[1].jpg\",\"originalImageName\":\"resize\"}",
+    "Image": null,
     "ID": 96,
-    "Modified": "2025-12-12T04:15:31Z",
+    "Modified": "2025-12-12T05:56:50Z",
     "Created": "2025-12-11T09:54:27Z",
     "AuthorId": 12,
     "EditorId": 12,
-    "OData__UIVersionString": "3.0",
-    "Attachments": true,
+    "OData__UIVersionString": "5.0",
+    "Attachments": false,
     "GUID": "fb1ac186-a255-4fdf-9f0d-1b36617269e4",
-    "Images": [
-      "/images/use-cases/96/cover.jpg"
-    ],
-    "CoverImage": "/images/use-cases/96/cover.jpg"
+    "Images": [],
+    "CoverImage": null
   },
   {
     "FileSystemObjectType": 0,
