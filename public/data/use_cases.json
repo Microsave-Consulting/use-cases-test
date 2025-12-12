@@ -157,9 +157,9 @@
     "Attachments": true,
     "GUID": "37c3802a-fc40-482f-a48a-f5aebc6e7988",
     "Images": [
-      "/images/use-cases/89/cover.jpg"
+      "/images/use-cases/89/cover.png"
     ],
-    "CoverImage": "/images/use-cases/89/cover.jpg"
+    "CoverImage": "/images/use-cases/89/cover.png"
   },
   {
     "FileSystemObjectType": 0,
@@ -671,9 +671,9 @@
     "Attachments": true,
     "GUID": "007a291b-7163-4e9e-bfa0-717f0d1ce44d",
     "Images": [
-      "/images/use-cases/73/cover.jpg"
+      "/images/use-cases/73/cover.png"
     ],
-    "CoverImage": "/images/use-cases/73/cover.jpg"
+    "CoverImage": "/images/use-cases/73/cover.png"
   },
   {
     "FileSystemObjectType": 0,
