@@ -49,7 +49,7 @@ function buildSectorDistribution(items, topN = 10) {
 /**
  * Custom label:
  * - Percentage inside slice
- * - Sector name outside slice (left/right aligned)
+ * - Sector name outside slice
  */
 function makeDualLabelRenderer({ showLeaderLine = false, minPercentForLabels = 0.04 }) {
   return function renderDualLabel(props) {
@@ -59,16 +59,19 @@ function makeDualLabelRenderer({ showLeaderLine = false, minPercentForLabels = 0
 
     const RADIAN = Math.PI / 180;
 
+    // Inside position (percentage)
     const rInside = outerRadius * 0.6;
     const xInside = cx + rInside * Math.cos(-midAngle * RADIAN);
     const yInside = cy + rInside * Math.sin(-midAngle * RADIAN);
 
+    // Outside position (sector name)
     const rOutside = outerRadius * 1.05;
     const xOutside = cx + rOutside * Math.cos(-midAngle * RADIAN);
     const yOutside = cy + rOutside * Math.sin(-midAngle * RADIAN);
 
     const textAnchor = xOutside > cx ? "start" : "end";
 
+    // Optional leader line points
     const rLineStart = outerRadius * 1.02;
     const xLineStart = cx + rLineStart * Math.cos(-midAngle * RADIAN);
     const yLineStart = cy + rLineStart * Math.sin(-midAngle * RADIAN);
@@ -86,6 +89,7 @@ function makeDualLabelRenderer({ showLeaderLine = false, minPercentForLabels = 0
           />
         ) : null}
 
+        {/* Percentage inside slice */}
         <text
           x={xInside}
           y={yInside}
@@ -98,6 +102,7 @@ function makeDualLabelRenderer({ showLeaderLine = false, minPercentForLabels = 0
           {(percent * 100).toFixed(1)}%
         </text>
 
+        {/* Sector name outside */}
         <text
           x={xOutside}
           y={yOutside}
@@ -147,24 +152,19 @@ export default function UseCaseSectorPie({
     [showLeaderLine, minPercentForLabels]
   );
 
-  function handleSliceClick(slice) {
-    const sector = slice?.name;
+  function goToSector(sector) {
     if (!sector) return;
+    if (sector === "Other") return; // optional
 
-    // Optional: ignore "Other" clicks
-    if (sector === "Other") return;
-
-    // ✅ IMPORTANT: set the query param key to whatever your Library reads.
-    // Common patterns:
-    //  - /library?sector=Education
-    //  - /library?Sectors=Education
-    //  - /library?Sectors=Education%2CHealth
-    //
-    // I’m using "Sectors" here because your data field is uc.Sectors.
     const params = new URLSearchParams();
-    params.set("Sectors", sector);
-
+    params.set("sector", sector); // ✅ MUST match UCL (?sector=...)
     navigate(`/library?${params.toString()}`);
+  }
+
+  // Recharts sends (data, index) where data.payload is the original data row
+  function handleSliceClick(d) {
+    const sectorName = d?.name || d?.payload?.name;
+    goToSector(sectorName);
   }
 
   return (
@@ -190,22 +190,21 @@ export default function UseCaseSectorPie({
               outerRadius={Math.min(190, Math.max(120, height * 0.35))}
               labelLine={false}
               label={renderDualLabel}
-              onClick={handleSliceClick}
-              style={{ cursor: "pointer" }}
+              onClick={handleSliceClick} // ✅ click on slice navigates
             >
-              {data.map((entry, idx) => (
-                <Cell
-                  key={entry.name || idx}
-                  fill={COLORS[idx % COLORS.length]}
-                  style={{ cursor: entry?.name === "Other" ? "default" : "pointer" }}
-                />
-              ))}
+              {data.map((entry, idx) => {
+                const clickable = entry?.name !== "Other";
+                return (
+                  <Cell
+                    key={entry.name || idx}
+                    fill={COLORS[idx % COLORS.length]}
+                    style={{ cursor: clickable ? "pointer" : "default" }}
+                  />
+                );
+              })}
             </Pie>
 
-            <Tooltip
-              formatter={(val, name) => [val, name]}
-              contentStyle={{ borderRadius: 10 }}
-            />
+            <Tooltip formatter={(val, name) => [val, name]} contentStyle={{ borderRadius: 10 }} />
             {showLegend ? <Legend /> : null}
           </PieChart>
         </ResponsiveContainer>
