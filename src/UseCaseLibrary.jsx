@@ -1,569 +1,187 @@
-// src/UseCaseLibrary.jsx
-import { useEffect, useMemo, useRef, useState } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
-import populationData from "country-json/src/country-by-population.json";
-import countries from "i18n-iso-countries";
-import enLocale from "i18n-iso-countries/langs/en.json";
-
-countries.registerLocale(enLocale);
+// src/UseCaseDetail.jsx
+import { useEffect, useMemo, useState } from "react";
+import { Link, useParams } from "react-router-dom";
+import "./UseCaseDetail.css";
 
 const CASES_URL = import.meta.env.BASE_URL + "data/use_cases.json";
-const CONFIG_URL = import.meta.env.BASE_URL + "data/filter_config.json";
 
-// Split "A, B, C" → ["A", "B", "C"]
 function splitValues(value) {
   if (!value) return [];
   return String(value)
     .split(",")
     .map((v) => v.trim())
-    .filter((v) => v.length > 0);
+    .filter(Boolean);
 }
 
-/* =======================
-   Population helpers
-   ======================= */
-
-// Build a lookup: country name (lowercased) -> population (number)
-const POPULATION_MAP = (() => {
-  const map = new Map();
-  populationData.forEach((row) => {
-    if (!row || !row.country) return;
-    map.set(String(row.country).toLowerCase(), Number(row.population));
-  });
-  return map;
-})();
-
-// Aliases only for population matching if needed
-const COUNTRY_ALIASES = {
-  rawanda: "rwanda",
-};
-
-function normalizeCountryName(name) {
-  if (!name) return null;
-  const trimmed = name.trim();
-  const key = trimmed.toLowerCase();
-  if (COUNTRY_ALIASES[key]) return COUNTRY_ALIASES[key];
-  return trimmed;
+function getHeroImage(u) {
+  // Prefer explicit cover image, otherwise first in Images array
+  return u?.CoverImage || (Array.isArray(u?.Images) ? u.Images[0] : null) || null;
 }
 
-function getPopulationForCountryName(name) {
-  const normalized = normalizeCountryName(name);
-  if (!normalized) return null;
-  const key = normalized.toLowerCase();
-  return POPULATION_MAP.get(key) ?? null;
-}
-
-function getPopulationForUseCase(uc) {
-  const countriesList = splitValues(uc.Country);
-  if (countriesList.length === 0) return null;
-  // Use the first country for multi-country entries
-  return getPopulationForCountryName(countriesList[0]);
-}
-
-function formatPopulation(pop) {
-  if (typeof pop !== "number" || Number.isNaN(pop)) return null;
-  if (pop >= 1_000_000_000) return (pop / 1_000_000_000).toFixed(1) + "B";
-  if (pop >= 1_000_000) return (pop / 1_000_000).toFixed(1) + "M";
-  if (pop >= 1_000) return (pop / 1_000).toFixed(1) + "k";
-  return String(pop);
-}
-
-/* =======================
-   Normalisation for label matching
-   ======================= */
-
-function normalizeCountryLabelForMatch(label) {
-  if (!label) return "";
-  let s = String(label).trim().toLowerCase();
-
-  // Remove most punctuation
-  s = s.replace(/[^a-z0-9\s]/g, " ");
-
-  // Collapse multiple spaces
-  s = s.replace(/\s+/g, " ").trim();
-
-  return s;
-}
-
-/* =======================
-   Filter pill + dropdown
-   ======================= */
-
-function FilterBubble({ id, label, options, selectedValues, onChange, primary }) {
-  const [open, setOpen] = useState(false);
-  const ref = useRef(null);
-
-  // click–outside to close
-  useEffect(() => {
-    function handleClickOutside(e) {
-      if (ref.current && !ref.current.contains(e.target)) {
-        setOpen(false);
-      }
-    }
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
-
-  const hasSelection = selectedValues && selectedValues.length > 0;
-
-  const summary = useMemo(() => {
-    if (!hasSelection) return "All";
-    if (selectedValues.length === 1) return selectedValues[0];
-    if (selectedValues.length === 2) {
-      return `${selectedValues[0]}, ${selectedValues[1]}`;
-    }
-    return `${selectedValues[0]}, ${selectedValues[1]} +${selectedValues.length - 2}`;
-  }, [selectedValues, hasSelection]);
-
-  const toggleValue = (value) => {
-    if (!value) return;
-    const arr = selectedValues || [];
-    if (arr.includes(value)) {
-      onChange(arr.filter((v) => v !== value));
-    } else {
-      onChange([...arr, value]);
-    }
-  };
-
+function toAbsAssetUrl(maybeRelativeUrl) {
+  if (!maybeRelativeUrl) return null;
+  // If already absolute, keep it
+  if (/^https?:\/\//i.test(maybeRelativeUrl)) return maybeRelativeUrl;
+  // Ensure it works on GitHub Pages with BASE_URL
+  const base = import.meta.env.BASE_URL || "/";
   return (
-    <div className="ucl-filter-bubble-wrapper" ref={ref}>
-      <button
-        type="button"
-        className={
-          "ucl-filter-bubble " +
-          (primary ? "ucl-filter-bubble-primary " : "ucl-filter-bubble-secondary ") +
-          (hasSelection ? "ucl-filter-bubble-selected" : "")
-        }
-        onClick={() => setOpen((o) => !o)}
-      >
-        <span className="ucl-filter-label">{label}</span>
-        <span className="ucl-filter-summary">{summary}</span>
-        <span className="ucl-filter-chevron">{open ? "▼" : "▼"}</span>
-      </button>
-
-      {open && (
-        <div className="ucl-filter-dropdown">
-          {(!options || options.length === 0) && (
-            <div className="ucl-filter-empty">No options</div>
-          )}
-          {(options || []).map((value) => {
-            const active = selectedValues?.includes(value);
-            return (
-              <div
-                key={value}
-                className={
-                  "ucl-filter-option " + (active ? "ucl-filter-option-active" : "")
-                }
-                onClick={() => toggleValue(value)}
-              >
-                <span className="ucl-filter-checkbox">{active ? "✓" : ""}</span>
-                <span className="ucl-filter-option-label">{value}</span>
-              </div>
-            );
-          })}
-        </div>
-      )}
-    </div>
+    base.replace(/\/$/, "") + "/" + String(maybeRelativeUrl).replace(/^\//, "")
   );
 }
 
-/* =======================
-   Card component
-   ======================= */
-
-function UseCaseCard({ uc, onOpen }) {
-  const sectors = splitValues(uc.Sectors);
-  const authModalities = splitValues(uc.AuthModalities);
-
-  const primarySector = sectors[0] || "—";
-
-  const regionText = uc.Region
-    ? uc.Subregion
-      ? `${uc.Region} — ${uc.Subregion}`
-      : uc.Region
-    : uc.Subregion || "—";
-
-  const description =
-    (uc.Remarks && uc.Remarks.trim().length > 0 && uc.Remarks) ||
-    (uc.KeyTerms && uc.KeyTerms.trim().length > 0 && uc.KeyTerms) ||
-    "";
-
-  const countriesList = splitValues(uc.Country);
-  const primaryCountry = countriesList[0] || uc.Country || "Unknown country";
-
-  const population = getPopulationForUseCase(uc);
-  const populationText = population
-    ? `Population (approx): ${formatPopulation(population)}`
-    : null;
-
-  // ✅ Cover image (blank space if missing)
-  const coverRel = uc.CoverImage || (Array.isArray(uc.Images) ? uc.Images[0] : null);
-
-  const coverSrc = coverRel
-    ? import.meta.env.BASE_URL + String(coverRel).replace(/^\//, "")
-    : null;
-
-  // Keep card image dimensions constant
-  const IMAGE_HEIGHT = 150;
-
-  const handleOpen = () => {
-    if (typeof onOpen === "function") onOpen(uc);
-  };
-
-  const handleKeyDown = (e) => {
-    if (e.key === "Enter" || e.key === " ") {
-      e.preventDefault();
-      handleOpen();
-    }
-  };
-
-  return (
-    <div
-      className="ucl-card ucl-card-clickable"
-      role="button"
-      tabIndex={0}
-      onClick={handleOpen}
-      onKeyDown={handleKeyDown}
-      aria-label={`Open details for ${uc.Title || "use case"}`}
-    >
-      {/* Image area (always present) */}
-      <div
-        className="ucl-card-image"
-        style={{
-          height: IMAGE_HEIGHT,
-          borderRadius: 14,
-          overflow: "hidden",
-          background: "#fff",
-          marginBottom: "0.75rem",
-        }}
-      >
-        {coverSrc ? (
-          <img
-            src={coverSrc}
-            alt={uc.Title ? `${uc.Title} cover` : "Use case cover"}
-            loading="lazy"
-            style={{
-              width: "100%",
-              height: "100%",
-              objectFit: "cover",
-              display: "block",
-            }}
-          />
-        ) : null}
-      </div>
-
-      <div className="ucl-card-header">
-        <div className="ucl-card-title">{uc.Title || "Untitled use case"}</div>
-
-        <div className="ucl-card-meta">
-          <span>{primaryCountry}</span>
-          <span>•</span>
-          <span>{primarySector}</span>
-          <span>•</span>
-          <span>{uc.MaturityLevel || "Unknown maturity"}</span>
-        </div>
-
-        <div className="ucl-card-meta-sub">Region: {regionText}</div>
-
-        {populationText && <div className="ucl-card-meta-sub">{populationText}</div>}
-      </div>
-
-      {description && (
-        <div className="ucl-card-body">
-          {description.length > 80 ? description.slice(0, 80) + "…" : description}
-        </div>
-      )}
-
-      {authModalities.length > 0 && (
-        <div className="ucl-card-tags" onClick={(e) => e.stopPropagation()}>
-          {authModalities.map((tag) => (
-            <span key={`auth-${tag}`} className="ucl-tag-pill">
-              {tag}
-            </span>
-          ))}
-        </div>
-      )}
-    </div>
-  );
-}
-
-/* =======================
-   Main page component
-   ======================= */
-
-export default function UseCaseLibrary() {
-  const navigate = useNavigate();
-  const [rawItems, setRawItems] = useState([]);
-  const [filterConfig, setFilterConfig] = useState([]);
-  const [filters, setFilters] = useState({});
+export default function UseCaseDetail() {
+  const { id } = useParams(); // expecting /use-cases/:id
+  const [rows, setRows] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [search, setSearch] = useState("");
 
-  const [searchParams] = useSearchParams();
-
-  // Load JSON data + filter config
   useEffect(() => {
-    async function load() {
+    let alive = true;
+
+    (async () => {
       try {
-        setLoading(true);
-        setError(null);
-
-        const [casesRes, configRes] = await Promise.all([
-          fetch(CASES_URL),
-          fetch(CONFIG_URL),
-        ]);
-
-        if (!casesRes.ok) throw new Error(`Cases HTTP ${casesRes.status}`);
-        if (!configRes.ok) throw new Error(`Config HTTP ${configRes.status}`);
-
-        const casesData = await casesRes.json();
-        const cfgData = await configRes.json();
-
-        const safeCases = Array.isArray(casesData) ? casesData : [];
-        const safeCfg = Array.isArray(cfgData) ? cfgData : [];
-
-        setRawItems(safeCases);
-        setFilterConfig(safeCfg);
-
-        // Initialise filters from config
-        const initialFilters = {};
-        safeCfg.forEach((f) => {
-          if (f && f.id) initialFilters[f.id] = [];
-        });
-        setFilters(initialFilters);
-      } catch (e) {
-        setError(e.message || "Unknown error");
+        const res = await fetch(CASES_URL, { cache: "no-store" });
+        const data = await res.json();
+        if (alive) setRows(Array.isArray(data) ? data : []);
+      } catch {
+        if (alive) setRows([]);
       } finally {
-        setLoading(false);
+        if (alive) setLoading(false);
       }
-    }
-    load();
+    })();
+
+    return () => {
+      alive = false;
+    };
   }, []);
 
-  const useCases = useMemo(() => rawItems || [], [rawItems]);
+  const useCase = useMemo(() => {
+    if (!id) return null;
 
-  // Build filter options from data + config
-  const filterOptions = useMemo(() => {
-    if (!filterConfig.length) return {};
-
-    const map = {};
-    filterConfig.forEach((f) => {
-      map[f.id] = new Set();
-    });
-
-    useCases.forEach((uc) => {
-      filterConfig.forEach((f) => {
-        if (!f || !f.id) return;
-
-        if (f.usesSubregion) {
-          const r = uc.Region || "";
-          const s = uc.Subregion || "";
-          const combined = r && s ? `${r} — ${s}` : r || s;
-          if (combined) map[f.id].add(combined);
-          return;
-        }
-
-        const raw = uc[f.field];
-        if (!raw) return;
-
-        if (f.multiValue) {
-          splitValues(raw).forEach((v) => map[f.id].add(v));
-        } else {
-          map[f.id].add(raw);
-        }
-      });
-    });
-
-    const final = {};
-    Object.keys(map).forEach((id) => {
-      final[id] = Array.from(map[id]).sort((a, b) =>
-        String(a).localeCompare(String(b))
-      );
-    });
-    return final;
-  }, [useCases, filterConfig]);
-
-  // 🔑 Apply / re-apply country filter whenever ?country=<name> changes
-  useEffect(() => {
-    if (!filterConfig.length) return;
-
-    const countryParam = searchParams.get("country");
-    if (!countryParam) return;
-
-    // Find the Country filter config
-    const countryFilter = filterConfig.find((f) => f.field === "Country");
-    if (!countryFilter) return;
-
-    const optionsForCountry = filterOptions[countryFilter.id] || [];
-    if (!optionsForCountry.length) return;
-
-    const targetNorm = normalizeCountryLabelForMatch(countryParam);
-
+    // Your JSON has both Id and ID; treat either as valid
     const match =
-      optionsForCountry.find(
-        (opt) => normalizeCountryLabelForMatch(opt) === targetNorm
-      ) || null;
+      rows.find((u) => String(u?.Id) === String(id)) ||
+      rows.find((u) => String(u?.ID) === String(id));
 
-    if (!match) return;
-
-    setFilters((prev) => {
-      const current = prev[countryFilter.id] || [];
-      if (current.length === 1 && current[0] === match) return prev;
-      return { ...prev, [countryFilter.id]: [match] };
-    });
-  }, [filterConfig, filterOptions, searchParams]);
-
-  const updateFilter = (id, values) => {
-    setFilters((prev) => ({
-      ...prev,
-      [id]: values,
-    }));
-  };
-
-  const clearAll = () => {
-    const cleared = {};
-    filterConfig.forEach((f) => {
-      if (f && f.id) cleared[f.id] = [];
-    });
-    setFilters(cleared);
-    setSearch("");
-  };
-
-  // ✅ Navigate to detail page
-  const openUseCase = (uc) => {
-    const caseId = uc?.ID ?? uc?.Id;
-    if (!caseId) return;
-    navigate(`/use-cases/${caseId}`);
-  };
-
-  // Apply search + filters
-  const filtered = useMemo(() => {
-    if (!filterConfig.length) return useCases;
-
-    return useCases.filter((uc) => {
-      // text search
-      if (search.trim()) {
-        const haystack = [uc.Title, uc.Country, uc.Sectors, uc.KeyTerms, uc.Remarks]
-          .filter(Boolean)
-          .join(" ")
-          .toLowerCase();
-
-        if (!haystack.includes(search.toLowerCase())) return false;
-      }
-
-      // filters: AND across filters, OR within each
-      return filterConfig.every((f) => {
-        if (!f || !f.id) return true;
-
-        const selected = filters[f.id];
-        if (!selected || selected.length === 0) return true;
-
-        if (f.usesSubregion) {
-          const r = uc.Region || "";
-          const s = uc.Subregion || "";
-          const combined = r && s ? `${r} — ${s}` : r || s;
-          if (!combined) return false;
-          return selected.includes(combined);
-        }
-
-        const raw = uc[f.field];
-        if (!raw) return false;
-
-        const values = f.multiValue ? splitValues(raw) : [raw];
-        return selected.some((v) => values.includes(v));
-      });
-    });
-  }, [useCases, search, filters, filterConfig]);
+    return match || null;
+  }, [rows, id]);
 
   if (loading) {
-    return <div className="ucl-page ucl-page-center">Loading use cases…</div>;
-  }
-
-  if (error) {
     return (
-      <div className="ucl-page ucl-page-center">
-        <p>Failed to load use cases: {error}</p>
-        <button className="ucl-btn" onClick={() => window.location.reload()}>
-          Retry
-        </button>
+      <div className="ucd-page ucd-page-center">
+        <div className="ucd-loading">Loading…</div>
       </div>
     );
   }
 
+  if (!useCase) {
+    return (
+      <div className="ucd-page ucd-page-center">
+        <h2 className="ucd-notfound-title">Use case not found</h2>
+        <p className="ucd-notfound-subtitle">
+          The link may be broken, or the item was removed.
+        </p>
+        <Link className="ucd-btn" to="/use-case-library">
+          Back to Use Case Library
+        </Link>
+      </div>
+    );
+  }
+
+  const title = useCase.Title || "Use case";
+  const description = useCase.Remarks || "";
+  const heroImg = toAbsAssetUrl(getHeroImage(useCase));
+
+  const region = useCase.Region || "—";
+  const subregion = useCase.Subregion || "";
+  const country = useCase.Country || "—";
+  const accessibility = useCase.Accessibility || "—";
+  const assurance = useCase.AssuranceLevels || "—";
+
+  const regionText = `${region}${subregion ? `; ${subregion}` : ""}`;
+
+  const keyTerms = splitValues(useCase.KeyTerms);
+
   return (
-    <div className="ucl-page">
-      <header className="ucl-header">
-        <div>
-          <h1 className="ucl-title">Explore Digital ID use cases</h1>
-          <p className="ucl-subtitle">
-            Search, filter, and browse real-world digital ID use cases.
-          </p>
-        </div>
-      </header>
+    <div className="ucd-page">
+      {/* Breadcrumb */}
+      <nav className="ucd-breadcrumb">
+        <Link to="/library">Use case library</Link>
+        <span className="ucd-crumb-sep">›</span>
+        <span className="ucd-crumb-current">{title}</span>
+      </nav>
 
-      {/* Search + filters */}
-      <section className="ucl-filter-bar">
-        <div className="ucl-search-wrapper">
-          <div className="ucl-search-bar">
-            <span className="ucl-search-icon" aria-hidden="true">
-              🔍
+      {/* Hero */}
+      <section className="ucd-hero">
+        <div className="ucd-hero-card">
+          <div className="ucd-hero-media">
+            {heroImg ? (
+              <img className="ucd-hero-img" src={heroImg} alt="" />
+            ) : (
+              <div className="ucd-hero-img ucd-hero-fallback" />
+            )}
+            <div className="ucd-hero-overlay" />
+            <h1 className="ucd-hero-title">{title}</h1>
+          </div>
+        </div>
+
+        {/* Meta pills */}
+        <div className="ucd-meta">
+          <div className="ucd-meta-pill-row">
+            <span className="ucd-meta-pill ucd-pill-region">
+              <span className="ucd-meta-pill-label">Region:</span>
+              <span className="ucd-meta-pill-value">{regionText}</span>
             </span>
-            <input
-              className="ucl-search-input"
-              type="text"
-              placeholder="Search use cases"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-            />
-            <button type="button" className="ucl-search-submit" aria-label="Search">
-              ➜
-            </button>
+
+            <span className="ucd-meta-pill ucd-pill-country">
+              <span className="ucd-meta-pill-label">Country:</span>
+              <span className="ucd-meta-pill-value">{country}</span>
+            </span>
+
+            <span className="ucd-meta-pill ucd-pill-accessibility">
+              <span className="ucd-meta-pill-label">Accessibility:</span>
+              <span className="ucd-meta-pill-value">{accessibility}</span>
+            </span>
+
+            <span className="ucd-meta-pill ucd-pill-assurance">
+              <span className="ucd-meta-pill-label">Assurance levels:</span>
+              <span className="ucd-meta-pill-value">{assurance}</span>
+            </span>
           </div>
         </div>
-
-        {filterConfig.length > 0 && (
-          <div className="ucl-filters-wrapper">
-            {filterConfig.map((f, index) => (
-              <FilterBubble
-                key={f.id}
-                id={f.id}
-                label={f.label}
-                options={filterOptions[f.id] || []}
-                selectedValues={filters[f.id] || []}
-                onChange={(vals) => updateFilter(f.id, vals)}
-                primary={index < 3}
-              />
-            ))}
-            <button type="button" className="ucl-clear-filters" onClick={clearAll}>
-              Clear all
-            </button>
-          </div>
-        )}
       </section>
 
-      <div className="ucl-results-summary">
-        Showing {filtered.length} of {useCases.length} use cases
-      </div>
-
-      {filtered.length === 0 ? (
-        <div className="ucl-empty-state">
-          <p>No use cases match your search and filters.</p>
-          <button className="ucl-btn" onClick={clearAll}>
-            Clear filters
-          </button>
-        </div>
-      ) : (
-        <section className="ucl-cards-grid">
-          {filtered.map((uc, idx) => (
-            <UseCaseCard
-              key={uc.ID ?? uc.Id ?? idx}
-              uc={uc}
-              onOpen={openUseCase}
-            />
-          ))}
+      {/* Body */}
+      <main className="ucd-body">
+        <section className="ucd-section">
+          <h2 className="ucd-h2">Description</h2>
+          {description ? (
+            <div className="ucd-description">
+              {String(description)
+                .split(/\n\s*\n/)
+                .map((p, idx) => (
+                  <p key={idx}>{p.trim()}</p>
+                ))}
+            </div>
+          ) : (
+            <p className="ucd-muted">No description available.</p>
+          )}
         </section>
-      )}
+
+        <section className="ucd-section">
+          <h2 className="ucd-h2">Key terms</h2>
+          {keyTerms.length ? (
+            <div className="ucd-pill-row">
+              {keyTerms.map((t) => (
+                <span key={t} className="ucd-pill">
+                  {t}
+                </span>
+              ))}
+            </div>
+          ) : (
+            <p className="ucd-muted">No key terms listed.</p>
+          )}
+        </section>
+      </main>
     </div>
   );
 }

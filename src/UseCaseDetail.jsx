@@ -1,3 +1,4 @@
+// src/UseCaseDetail.jsx
 import { useEffect, useMemo, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import "./UseCaseDetail.css";
@@ -23,7 +24,9 @@ function toAbsAssetUrl(maybeRelativeUrl) {
   if (/^https?:\/\//i.test(maybeRelativeUrl)) return maybeRelativeUrl;
   // Ensure it works on GitHub Pages with BASE_URL
   const base = import.meta.env.BASE_URL || "/";
-  return base.replace(/\/$/, "") + "/" + String(maybeRelativeUrl).replace(/^\//, "");
+  return (
+    base.replace(/\/$/, "") + "/" + String(maybeRelativeUrl).replace(/^\//, "")
+  );
 }
 
 export default function UseCaseDetail() {
@@ -94,6 +97,8 @@ export default function UseCaseDetail() {
   const accessibility = useCase.Accessibility || "—";
   const assurance = useCase.AssuranceLevels || "—";
 
+  const regionText = `${region}${subregion ? `; ${subregion}` : ""}`;
+
   const keyTerms = splitValues(useCase.KeyTerms);
 
   return (
@@ -119,37 +124,28 @@ export default function UseCaseDetail() {
           </div>
         </div>
 
-        {/* Meta strip */}
+        {/* Meta pills */}
         <div className="ucd-meta">
-          <div className="ucd-meta-row">
-            <div className="ucd-meta-item">
-              <span className="ucd-meta-label">Region:</span>
-              <span className="ucd-meta-value">
-                {region}
-                {subregion ? `; ${subregion}` : ""}
-              </span>
-            </div>
+          <div className="ucd-meta-pill-row">
+            <span className="ucd-meta-pill ucd-pill-region">
+              <span className="ucd-meta-pill-label">Region:</span>
+              <span className="ucd-meta-pill-value">{regionText}</span>
+            </span>
 
-            <div className="ucd-meta-divider" />
+            <span className="ucd-meta-pill ucd-pill-country">
+              <span className="ucd-meta-pill-label">Country:</span>
+              <span className="ucd-meta-pill-value">{country}</span>
+            </span>
 
-            <div className="ucd-meta-item">
-              <span className="ucd-meta-label">Country:</span>
-              <span className="ucd-meta-value">{country}</span>
-            </div>
+            <span className="ucd-meta-pill ucd-pill-accessibility">
+              <span className="ucd-meta-pill-label">Accessibility:</span>
+              <span className="ucd-meta-pill-value">{accessibility}</span>
+            </span>
 
-            <div className="ucd-meta-divider" />
-
-            <div className="ucd-meta-item">
-              <span className="ucd-meta-label">Accessibility:</span>
-              <span className="ucd-meta-value">{accessibility}</span>
-            </div>
-
-            <div className="ucd-meta-divider" />
-
-            <div className="ucd-meta-item">
-              <span className="ucd-meta-label">Assurance levels:</span>
-              <span className="ucd-meta-value">{assurance}</span>
-            </div>
+            <span className="ucd-meta-pill ucd-pill-assurance">
+              <span className="ucd-meta-pill-label">Assurance levels:</span>
+              <span className="ucd-meta-pill-value">{assurance}</span>
+            </span>
           </div>
         </div>
       </section>
