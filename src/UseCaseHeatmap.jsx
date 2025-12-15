@@ -82,20 +82,20 @@ export default function UseCaseHeatmap({ items }) {
   const colorScale = useMemo(() => {
     const values = Object.values(countsByCode);
     if (!values.length) {
-      return () => "#2a4d7a"; // lighter blue
+      return () => "#facc15";
     }
 
     const uniqueValues = Array.from(new Set(values)).sort((a, b) => a - b);
 
     const palette = [
-      "#fff7cc", // very light
+      "#fff7cc",
       "#ffef99",
       "#ffe066",
       "#ffd033",
-      "#facc15", // strong amber
+      "#facc15",
       "#eab308",
       "#ca8a04",
-      "#a16207", // darkest amber
+      "#a16207",
     ];
 
     const n = uniqueValues.length;
@@ -112,7 +112,7 @@ export default function UseCaseHeatmap({ items }) {
       }
     });
 
-    return (value) => colorMap[value] || "#2a4d7a";
+    return (value) => colorMap[value] || "#facc15";
   }, [countsByCode]);
 
   // Hover helpers
@@ -134,13 +134,16 @@ export default function UseCaseHeatmap({ items }) {
     setTooltipPos(null);
   };
 
+  // Map canvas size used to paint the ocean gradient rect
+  const MAP_W = 1000;
+  const MAP_H = 450;
+
   return (
     <div
       style={{
         width: "100%",
         padding: "2rem 0",
-        // ✅ keep the overall page/background dark (so you don’t get the cyan “band”)
-        background: "#0f2447",
+        background: "transparent",
         position: "relative",
       }}
     >
@@ -149,49 +152,63 @@ export default function UseCaseHeatmap({ items }) {
           width: "95vw",
           maxWidth: "1600px",
           margin: "0 auto",
-          background: "#122b55",
+          background: "transparent",
           borderRadius: "12px",
           padding: "1.5rem 1rem",
           boxShadow: "0 12px 30px rgba(0,0,0,0.35)",
           position: "relative",
         }}
       >
-        <h2
-          style={{
-            textAlign: "center",
-            color: "white",
-            marginBottom: "1.25rem",
-            fontSize: "1.6rem",
-          }}
-        >
-          Digital ID Innovations Library
-        </h2>
+        
 
-        {/* ✅ NEW: frame around the map so cyan doesn’t fill the whole “card section” */}
         <div
           style={{
-            background: "#122b55",
+            background: "transparent",
             padding: "0.9rem",
             borderRadius: "12px",
           }}
         >
           <ComposableMap
             projectionConfig={{ scale: 155, center: [-10, 10] }}
-            width={1000}
-            height={450}
+            width={MAP_W}
+            height={MAP_H}
             style={{
               width: "100%",
               height: "auto",
-              // ✅ ocean color applied to the map canvas
-              background: "#ccf7ff",
               borderRadius: "10px",
               overflow: "hidden",
               display: "block",
             }}
           >
+            {/* ✅ Ocean gradient background (behind countries) */}
+            <defs>
+              <linearGradient id="oceanGradient" x1="0" y1="1" x2="1" y2="0">
+                <stop offset="0%" stopColor="#4aa8ff" />
+                <stop offset="55%" stopColor="#2f6fce" />
+                <stop offset="100%" stopColor="#1f4ea6" />
+              </linearGradient>
+
+              <clipPath id="flag-clip-hover">
+                <circle r="11" cx="0" cy="0" />
+              </clipPath>
+            </defs>
+
+            <rect
+              x="0"
+              y="0"
+              width={MAP_W}
+              height={MAP_H}
+              fill="url(#oceanGradient)"
+            />
+            <text x={70} y={260} fontSize={28} fontWeight={700} fill="#fff">
+              <tspan x={70} dy="0">Digital ID</tspan>
+              <tspan x={70} dy="34">Innovations</tspan>
+              <tspan x={70} dy="34">Library</tspan>
+            </text>
+
             <Geographies geography={geoUrl}>
               {({ geographies }) => {
-                // 3) Build centroids per ISO2 (one per country)
+                // Build centroids per ISO2 (one per country)
                 const centroidByIso = {};
                 geographies.forEach((geo) => {
                   const p = geo.properties || {};
@@ -232,20 +249,19 @@ export default function UseCaseHeatmap({ items }) {
                       const val = iso2 ? countsByCode[iso2] || 0 : 0;
                       const hasData = val > 0;
 
+                      // ✅ Non-specified countries: WHITE
                       if (!hasData) {
                         return (
                           <Geography
                             key={geo.rsmKey}
                             geography={geo}
-                            fill="#2a4d7a"
-                            stroke="#1f3b73"
-                            strokeWidth={0.4}
+                            fill="#ffffff"
+                            stroke="rgba(0,0,0,0.18)"
+                            strokeWidth={0.5}
                             style={{
                               default: { outline: "none" },
-                              hover: {
-                                outline: "none",
-                                cursor: "default",
-                              },
+                              hover: { outline: "none", cursor: "default" },
+                              pressed: { outline: "none" },
                             }}
                             onMouseLeave={hideHover}
                           />
@@ -267,15 +283,16 @@ export default function UseCaseHeatmap({ items }) {
                           key={geo.rsmKey}
                           geography={geo}
                           fill={colorScale(val)}
-                          stroke="#1f3b73"
-                          strokeWidth={0.4}
+                          stroke="rgba(0,0,0,0.22)"
+                          strokeWidth={0.55}
                           style={{
                             default: { outline: "none" },
                             hover: {
                               outline: "none",
                               cursor: "pointer",
-                              opacity: 0.9,
+                              opacity: 0.92,
                             },
+                            pressed: { outline: "none" },
                           }}
                           onMouseEnter={(e) =>
                             showHover(info, centroidInfo.centroid, e)
@@ -289,7 +306,7 @@ export default function UseCaseHeatmap({ items }) {
                       );
                     })}
 
-                    {/* 5) Hover-only flag pin (also clickable) */}
+                    {/* Hover-only flag pin (also clickable) */}
                     {hoverInfo && hoverCentroid && (
                       <Marker coordinates={hoverCentroid}>
                         <g
@@ -309,11 +326,6 @@ export default function UseCaseHeatmap({ items }) {
                           <circle r="15" fill="rgba(250,204,21,0.25)" />
                           <circle r="12" fill="#ffffff" />
 
-                          <defs>
-                            <clipPath id="flag-clip-hover">
-                              <circle r="11" cx="0" cy="0" />
-                            </clipPath>
-                          </defs>
                           <image
                             href={flagUrlFromIso2(hoverInfo.iso2)}
                             x={-11}
@@ -345,7 +357,7 @@ export default function UseCaseHeatmap({ items }) {
           </ComposableMap>
         </div>
 
-        {/* 6) Tooltip following the cursor */}
+        {/* Tooltip following the cursor */}
         {hoverInfo && tooltipPos && (
           <div
             style={{
