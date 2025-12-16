@@ -33,7 +33,7 @@ function Shell() {
                 "app-nav-link" + (isActive ? " is-active" : "")
               }
             >
-              🧩 <span>Use Case Library</span>
+              📚 <span>Use Case Library</span>
             </NavLink>
           </nav>
         </div>

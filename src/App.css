@@ -1,6 +1,8 @@
 /* src/App.css */
 
-/* Minimal baseline */
+/* =======================
+   Minimal baseline
+   ======================= */
 *,
 *::before,
 *::after {
@@ -11,7 +13,9 @@ body {
   margin: 0;
 }
 
-/* Tokens */
+/* =======================
+   Tokens
+   ======================= */
 :root {
   --container-max: 1200px;
   --page-pad-x: 16px;
@@ -21,6 +25,8 @@ body {
   --text: #111;
   --muted: #555;
   --bg: #fff;
+
+  --accent: #2563eb; /* blue for active tab */
 
   --radius: 10px;
 }
@@ -32,12 +38,15 @@ body {
   }
 }
 
-/* App shell */
+/* =======================
+   App shell
+   ======================= */
 .app {
   min-height: 100vh;
   background: var(--bg);
   color: var(--text);
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    sans-serif;
 }
 
 .app-container {
@@ -51,9 +60,12 @@ body {
   background: var(--bg);
 }
 
+/* =======================
+   Navigation
+   ======================= */
 .app-nav {
   display: flex;
-  gap: 12px;
+  gap: 16px;
   align-items: center;
   padding: 12px 0;
   flex-wrap: wrap;
@@ -62,26 +74,41 @@ body {
 .app-nav-link {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  padding: 10px 12px;
-  border-radius: var(--radius);
+  gap: 6px;
+
+  /* ❌ no box styling */
+  padding: 0;
+  border: none;
+  background: none;
+  border-radius: 0;
+
   text-decoration: none;
   color: var(--muted);
-  border: 1px solid transparent;
+  font-weight: 500;
 }
 
+/* Hover — subtle, no box */
 .app-nav-link:hover {
-  border-color: var(--border);
   color: var(--text);
+  text-decoration: underline;
+  text-underline-offset: 3px;
 }
 
+/* Active — blue text only */
 .app-nav-link.is-active {
-  color: var(--text);
-  border-color: var(--border);
-  background: #f7f7f7;
+  color: var(--accent);
+  font-weight: 600;
+
+  /* ensure no visual container */
+  background: none;
+  border: none;
+  box-shadow: none;
+  text-decoration: none;
 }
 
-/* Main area */
+/* =======================
+   Main area
+   ======================= */
 .app-main {
   padding: var(--page-pad-y) 0;
 }

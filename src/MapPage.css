@@ -13,28 +13,27 @@
 }
 
 /* =========================
-   2x2 grid under main map
+   3 rows × 2 columns grid
    ========================= */
 
-.map-grid-2x2 {
+.map-grid-3x2 {
   padding: 0 1rem 1.25rem;
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 1.25rem; /* spacing now defines separation */
+  gap: 1.25rem;
   align-items: stretch;
 }
 
-/* Grid cells — no visible borders */
+/* Borderless cells */
 .map-cell {
   min-width: 0;
-  background: transparent; /* no card look */
+  background: transparent;
   border: none;
-  border-radius: 0;
-  padding: 0; /* let widgets manage their own padding */
+  padding: 0;
   overflow: hidden;
 }
 
-/* Placeholder cell (bottom-right) */
+/* Placeholder styling */
 .map-placeholder {
   display: flex;
   align-items: center;
@@ -42,18 +41,18 @@
 }
 
 .map-placeholder-text {
-  font-size: 2rem;
+  font-size: 1.75rem;
   font-weight: 700;
   color: #222;
   text-align: center;
 }
 
 /* =========================
-   Responsive: stack on mobile
+   Responsive: single column
    ========================= */
 
 @media (max-width: 900px) {
-  .map-grid-2x2 {
+  .map-grid-3x2 {
     grid-template-columns: 1fr;
   }
 }
