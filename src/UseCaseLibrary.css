@@ -225,7 +225,8 @@
   border-color: var(--pill-border);
 }
 
-.ucl-filter-bubble-selected {
+/* ✅ FIX: selected must beat the base selector above */
+.ucl-filter-bubble-wrapper .ucl-filter-bubble.ucl-filter-bubble-selected {
   background: var(--pill-selected);
   border-color: var(--pill-selected-border);
   color: #1f2a44;
