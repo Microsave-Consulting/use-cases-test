@@ -4,6 +4,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import populationData from "country-json/src/country-by-population.json";
 import countries from "i18n-iso-countries";
 import enLocale from "i18n-iso-countries/langs/en.json";
+import "./UseCaseLibrary.css"; // ✅ page-scoped CSS
 
 countries.registerLocale(enLocale);
 
@@ -44,7 +45,6 @@ function toAbsAssetUrl(maybeRelativeUrl) {
    Population helpers
    ======================= */
 
-// Build a lookup: country name (lowercased) -> population (number)
 const POPULATION_MAP = (() => {
   const map = new Map();
   populationData.forEach((row) => {
@@ -54,7 +54,6 @@ const POPULATION_MAP = (() => {
   return map;
 })();
 
-// Aliases only for population matching if needed
 const COUNTRY_ALIASES = {
   rawanda: "rwanda",
 };
@@ -77,7 +76,6 @@ function getPopulationForCountryName(name) {
 function getPopulationForUseCase(uc) {
   const countriesList = splitValues(uc.Country);
   if (countriesList.length === 0) return null;
-  // Use the first country for multi-country entries
   return getPopulationForCountryName(countriesList[0]);
 }
 
@@ -101,7 +99,6 @@ function normalizeCountryLabelForMatch(label) {
   return s;
 }
 
-// Generic normalizer (used for sector/maturity URL matching)
 function normalizeLabelForMatch(label) {
   if (!label) return "";
   let s = String(label).trim().toLowerCase();
@@ -118,12 +115,9 @@ function FilterBubble({ id, label, options, selectedValues, onChange, primary })
   const [open, setOpen] = useState(false);
   const ref = useRef(null);
 
-  // click–outside to close
   useEffect(() => {
     function handleClickOutside(e) {
-      if (ref.current && !ref.current.contains(e.target)) {
-        setOpen(false);
-      }
+      if (ref.current && !ref.current.contains(e.target)) setOpen(false);
     }
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
@@ -134,20 +128,15 @@ function FilterBubble({ id, label, options, selectedValues, onChange, primary })
   const summary = useMemo(() => {
     if (!hasSelection) return "All";
     if (selectedValues.length === 1) return selectedValues[0];
-    if (selectedValues.length === 2) {
-      return `${selectedValues[0]}, ${selectedValues[1]}`;
-    }
+    if (selectedValues.length === 2) return `${selectedValues[0]}, ${selectedValues[1]}`;
     return `${selectedValues[0]}, ${selectedValues[1]} +${selectedValues.length - 2}`;
   }, [selectedValues, hasSelection]);
 
   const toggleValue = (value) => {
     if (!value) return;
     const arr = selectedValues || [];
-    if (arr.includes(value)) {
-      onChange(arr.filter((v) => v !== value));
-    } else {
-      onChange([...arr, value]);
-    }
+    if (arr.includes(value)) onChange(arr.filter((v) => v !== value));
+    else onChange([...arr, value]);
   };
 
   return (
@@ -160,17 +149,20 @@ function FilterBubble({ id, label, options, selectedValues, onChange, primary })
           (hasSelection ? "ucl-filter-bubble-selected" : "")
         }
         onClick={() => setOpen((o) => !o)}
+        aria-expanded={open}
+        aria-controls={`ucl-dropdown-${id}`}
       >
         <span className="ucl-filter-label">{label}</span>
         <span className="ucl-filter-summary">{summary}</span>
-        <span className="ucl-filter-chevron">{open ? "▼" : "▼"}</span>
+        <span className="ucl-filter-chevron" aria-hidden="true">
+          ▼
+        </span>
       </button>
 
       {open && (
-        <div className="ucl-filter-dropdown">
-          {(!options || options.length === 0) && (
-            <div className="ucl-filter-empty">No options</div>
-          )}
+        <div className="ucl-filter-dropdown" id={`ucl-dropdown-${id}`}>
+          {(!options || options.length === 0) && <div className="ucl-filter-empty">No options</div>}
+
           {(options || []).map((value) => {
             const active = selectedValues?.includes(value);
             return (
@@ -178,6 +170,14 @@ function FilterBubble({ id, label, options, selectedValues, onChange, primary })
                 key={value}
                 className={"ucl-filter-option " + (active ? "ucl-filter-option-active" : "")}
                 onClick={() => toggleValue(value)}
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    toggleValue(value);
+                  }
+                }}
               >
                 <span className="ucl-filter-checkbox">{active ? "✓" : ""}</span>
                 <span className="ucl-filter-option-label">{value}</span>
@@ -195,24 +195,10 @@ function FilterBubble({ id, label, options, selectedValues, onChange, primary })
    ======================= */
 
 function pickCardImageUrl(uc) {
-  // NEW: Thumbnail is the card image source
-  const thumb =
-    uc?.ThumbnailUrl ||
-    uc?.Thumbnail ||
-    null;
-
-  // NEW: if no thumbnail, fall back to cover
-  const cover =
-    uc?.CoverImageUrl ||
-    uc?.CoverImage ||
-    null;
-
-  // Legacy fallback (older local JSONs)
-  const legacy =
-    Array.isArray(uc?.Images) ? uc.Images[0] : null;
-
-  const chosen = thumb || cover || legacy || null;
-  return toAbsAssetUrl(chosen);
+  const thumb = uc?.ThumbnailUrl || uc?.Thumbnail || null;
+  const cover = uc?.CoverImageUrl || uc?.CoverImage || null;
+  const legacy = Array.isArray(uc?.Images) ? uc.Images[0] : null;
+  return toAbsAssetUrl(thumb || cover || legacy || null);
 }
 
 function UseCaseCard({ uc, onOpen }) {
@@ -236,14 +222,9 @@ function UseCaseCard({ uc, onOpen }) {
   const primaryCountry = countriesList[0] || uc.Country || "Unknown country";
 
   const population = getPopulationForUseCase(uc);
-  const populationText = population
-    ? `Population (approx): ${formatPopulation(population)}`
-    : null;
+  const populationText = population ? `Population (approx): ${formatPopulation(population)}` : null;
 
   const imageSrc = pickCardImageUrl(uc);
-
-  // Keep card image dimensions constant
-  const IMAGE_HEIGHT = 150;
 
   const handleOpen = () => {
     if (typeof onOpen === "function") onOpen(uc);
@@ -265,30 +246,18 @@ function UseCaseCard({ uc, onOpen }) {
       onKeyDown={handleKeyDown}
       aria-label={`Open details for ${uc.Title || "use case"}`}
     >
-      {/* Image area (always present) */}
-      <div
-        className="ucl-card-image"
-        style={{
-          height: IMAGE_HEIGHT,
-          borderRadius: 14,
-          overflow: "hidden",
-          background: "#fff",
-          marginBottom: "0.75rem",
-        }}
-      >
+      {/* Image area (always reserved, prevents layout shift) */}
+      <div className="ucl-card-image">
         {imageSrc ? (
           <img
+            className="ucl-card-image-img"
             src={imageSrc}
             alt={uc.Title ? `${uc.Title} thumbnail` : "Use case thumbnail"}
             loading="lazy"
-            style={{
-              width: "100%",
-              height: "100%",
-              objectFit: "cover",
-              display: "block",
-            }}
           />
-        ) : null}
+        ) : (
+          <div className="ucl-card-image-empty" aria-hidden="true" />
+        )}
       </div>
 
       <div className="ucl-card-header">
@@ -303,7 +272,6 @@ function UseCaseCard({ uc, onOpen }) {
         </div>
 
         <div className="ucl-card-meta-sub">Region: {regionText}</div>
-
         {populationText && <div className="ucl-card-meta-sub">{populationText}</div>}
       </div>
 
@@ -341,7 +309,6 @@ export default function UseCaseLibrary() {
 
   const [searchParams] = useSearchParams();
 
-  // Load JSON data + filter config
   useEffect(() => {
     async function load() {
       try {
@@ -349,7 +316,6 @@ export default function UseCaseLibrary() {
         setError(null);
 
         const [casesRes, configRes] = await Promise.all([fetch(CASES_URL), fetch(CONFIG_URL)]);
-
         if (!casesRes.ok) throw new Error(`Cases HTTP ${casesRes.status}`);
         if (!configRes.ok) throw new Error(`Config HTTP ${configRes.status}`);
 
@@ -362,7 +328,6 @@ export default function UseCaseLibrary() {
         setRawItems(safeCases);
         setFilterConfig(safeCfg);
 
-        // Initialise filters from config
         const initialFilters = {};
         safeCfg.forEach((f) => {
           if (f && f.id) initialFilters[f.id] = [];
@@ -379,7 +344,6 @@ export default function UseCaseLibrary() {
 
   const useCases = useMemo(() => rawItems || [], [rawItems]);
 
-  // Build filter options from data + config
   const filterOptions = useMemo(() => {
     if (!filterConfig.length) return {};
 
@@ -403,11 +367,8 @@ export default function UseCaseLibrary() {
         const raw = uc[f.field];
         if (!raw) return;
 
-        if (f.multiValue) {
-          splitValues(raw).forEach((v) => map[f.id].add(v));
-        } else {
-          map[f.id].add(raw);
-        }
+        if (f.multiValue) splitValues(raw).forEach((v) => map[f.id].add(v));
+        else map[f.id].add(raw);
       });
     });
 
@@ -418,7 +379,7 @@ export default function UseCaseLibrary() {
     return final;
   }, [useCases, filterConfig]);
 
-  // Apply / re-apply country filter whenever ?country=<name> changes
+  // country param
   useEffect(() => {
     if (!filterConfig.length) return;
 
@@ -432,7 +393,6 @@ export default function UseCaseLibrary() {
     if (!optionsForCountry.length) return;
 
     const targetNorm = normalizeCountryLabelForMatch(countryParam);
-
     const match =
       optionsForCountry.find((opt) => normalizeCountryLabelForMatch(opt) === targetNorm) || null;
 
@@ -445,7 +405,7 @@ export default function UseCaseLibrary() {
     });
   }, [filterConfig, filterOptions, searchParams]);
 
-  // Apply / re-apply sector filter whenever ?sector=<name>[,<name2>...] changes
+  // sector param
   useEffect(() => {
     if (!filterConfig.length) return;
 
@@ -459,7 +419,6 @@ export default function UseCaseLibrary() {
     if (!optionsForSector.length) return;
 
     const wanted = splitValues(sectorParam);
-
     const matches = wanted
       .map((w) => {
         const wNorm = normalizeLabelForMatch(w);
@@ -477,7 +436,7 @@ export default function UseCaseLibrary() {
     });
   }, [filterConfig, filterOptions, searchParams]);
 
-  // Apply / re-apply maturity filter whenever ?maturity=<value> changes
+  // maturity param
   useEffect(() => {
     if (!filterConfig.length) return;
 
@@ -491,7 +450,6 @@ export default function UseCaseLibrary() {
     if (!optionsForMaturity.length) return;
 
     const targetNorm = normalizeLabelForMatch(maturityParam);
-
     const match =
       optionsForMaturity.find((opt) => normalizeLabelForMatch(opt) === targetNorm) || null;
 
@@ -517,19 +475,16 @@ export default function UseCaseLibrary() {
     setSearch("");
   };
 
-  // Navigate to detail page
   const openUseCase = (uc) => {
     const caseId = uc?.ID ?? uc?.Id;
     if (!caseId) return;
     navigate(`/use-cases/${caseId}`);
   };
 
-  // Apply search + filters
   const filtered = useMemo(() => {
     if (!filterConfig.length) return useCases;
 
     return useCases.filter((uc) => {
-      // text search
       if (search.trim()) {
         const haystack = [uc.Title, uc.Country, uc.Sectors, uc.KeyTerms, uc.Remarks]
           .filter(Boolean)
@@ -539,7 +494,6 @@ export default function UseCaseLibrary() {
         if (!haystack.includes(search.toLowerCase())) return false;
       }
 
-      // filters: AND across filters, OR within each
       return filterConfig.every((f) => {
         if (!f || !f.id) return true;
 
@@ -563,9 +517,7 @@ export default function UseCaseLibrary() {
     });
   }, [useCases, search, filters, filterConfig]);
 
-  if (loading) {
-    return <div className="ucl-page ucl-page-center">Loading use cases…</div>;
-  }
+  if (loading) return <div className="ucl-page ucl-page-center">Loading use cases…</div>;
 
   if (error) {
     return (
@@ -587,13 +539,13 @@ export default function UseCaseLibrary() {
         </div>
       </header>
 
-      {/* Search + filters */}
       <section className="ucl-filter-bar">
         <div className="ucl-search-wrapper">
           <div className="ucl-search-bar">
             <span className="ucl-search-icon" aria-hidden="true">
               🔍
             </span>
+
             <input
               className="ucl-search-input"
               type="text"
@@ -601,6 +553,7 @@ export default function UseCaseLibrary() {
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />
+
             <button type="button" className="ucl-search-submit" aria-label="Search">
               ➜
             </button>
@@ -620,6 +573,7 @@ export default function UseCaseLibrary() {
                 primary={index < 3}
               />
             ))}
+
             <button type="button" className="ucl-clear-filters" onClick={clearAll}>
               Clear all
             </button>

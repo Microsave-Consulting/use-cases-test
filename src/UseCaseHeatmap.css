@@ -1,0 +1,119 @@
+/* src/UseCaseHeatmap.css */
+
+.uch {
+  width: 100%;
+  padding: 2rem 0;
+  position: relative;
+}
+
+.uch-shell {
+  width: 95vw;
+  max-width: 1600px;
+  margin: 0 auto;
+  border-radius: 12px;
+  padding: 1.5rem 1rem;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
+  position: relative;
+}
+
+.uch-map-frame {
+  background: transparent;
+  padding: 0.9rem;
+  border-radius: 12px;
+}
+
+.uch-map {
+  width: 100%;
+  height: auto;
+  border-radius: 10px;
+  overflow: hidden;
+  display: block;
+}
+
+.uch-map-title {
+  fill: #fff;
+  font-size: 28px;
+  font-weight: 700;
+}
+
+/* Geography defaults */
+.uch-geo {
+  outline: none;
+}
+
+.uch-geo-hasdata {
+  cursor: pointer;
+}
+
+.uch-geo-hasdata:hover {
+  opacity: 0.92;
+}
+
+/* Hover-only pin */
+.uch-pin {
+  cursor: pointer;
+}
+
+.uch-pin-stem {
+  stroke: #facc15;
+  stroke-width: 2;
+}
+
+.uch-pin-tip {
+  fill: #facc15;
+}
+
+.uch-pin-halo {
+  fill: rgba(250, 204, 21, 0.25);
+}
+
+.uch-pin-ring {
+  fill: #ffffff;
+}
+
+.uch-pin-flag {
+  pointer-events: none;
+}
+
+.uch-pin-count {
+  fill: #facc15;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+/* Cursor tooltip */
+.uch-tooltip {
+  position: fixed;
+  background: rgba(10, 18, 28, 0.92);
+  color: #e5e7eb;
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  pointer-events: none;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.45);
+  z-index: 9999;
+  white-space: nowrap;
+}
+
+/* Min/max footer */
+.uch-minmax {
+  margin-top: 0.75rem;
+  font-size: 0.8rem;
+  color: #cbd5f5;
+  text-align: right;
+  opacity: 0.85;
+}
+
+/* Mobile tweaks */
+@media (max-width: 560px) {
+  .uch {
+    padding: 1.25rem 0;
+  }
+  .uch-shell {
+    width: 100%;
+    padding: 1rem 0.75rem;
+  }
+  .uch-map-frame {
+    padding: 0.6rem;
+  }
+}

@@ -31,7 +31,7 @@ function toAbsAssetUrl(maybeRelativeUrl) {
 }
 
 function getHeroImage(u) {
-  // NEW: Prefer CoverImage (or CoverImageUrl if your API enriches), then legacy Images[0]
+  // Prefer CoverImage (or CoverImageUrl if your API enriches), then legacy Images[0]
   const cover = u?.CoverImageUrl || u?.CoverImage || null;
   const legacy = Array.isArray(u?.Images) ? u.Images[0] : null;
   return cover || legacy || null;
@@ -88,7 +88,9 @@ export default function UseCaseDetail() {
         <p className="ucd-notfound-subtitle">
           The link may be broken, or the item was removed.
         </p>
-        <Link className="ucd-btn" to="/use-case-library">
+
+        {/* ✅ FIXED: correct route */}
+        <Link className="ucd-btn" to="/library">
           Back to Use Case Library
         </Link>
       </div>
@@ -123,7 +125,8 @@ export default function UseCaseDetail() {
         <div className="ucd-hero-card">
           <div className="ucd-hero-media">
             {heroImg ? (
-              <img className="ucd-hero-img" src={heroImg} alt="" />
+              /* ✅ FIXED: decorative image properly marked */
+              <img className="ucd-hero-img" src={heroImg} alt="" aria-hidden="true" />
             ) : (
               <div className="ucd-hero-img ucd-hero-fallback" />
             )}

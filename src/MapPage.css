@@ -1,0 +1,32 @@
+/* src/MapPage.css */
+
+.map-page {
+  width: 100%;
+}
+
+.map-page-status {
+  padding: 1rem;
+}
+
+.map-section {
+  padding: 1.25rem 1rem;
+}
+
+/* Two-up on desktop, one-up on mobile */
+.map-grid {
+  padding: 0 1rem 1.25rem;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  align-items: start;
+}
+
+.map-panel {
+  min-width: 0;
+}
+
+@media (max-width: 900px) {
+  .map-grid {
+    grid-template-columns: 1fr;
+  }
+}

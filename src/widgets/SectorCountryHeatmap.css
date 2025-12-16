@@ -1,0 +1,80 @@
+/* src/widgets/SectorCountryHeatmap.css */
+
+.schm {
+  width: 100%;
+}
+
+.schm-title {
+  text-align: center;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.schm-scroll {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.schm-inner {
+  margin: 0 auto;
+}
+
+.schm-svg {
+  display: block;
+}
+
+.schm-row-label {
+  font-size: 12px;
+  fill: #111;
+}
+
+.schm-col-label {
+  font-size: 11px;
+  fill: #111;
+}
+
+.schm-rect {
+  stroke: #e5e7eb;
+}
+
+.schm-cell-text {
+  font-size: 12px;
+  font-weight: 600;
+  fill: #111;
+  pointer-events: none;
+}
+
+.schm-cell.is-clickable {
+  cursor: pointer;
+}
+
+.schm-cell.is-clickable:hover .schm-rect {
+  stroke: #94a3b8; /* slightly darker border on hover */
+}
+
+.schm-colorbar {
+  stroke: #e5e7eb;
+}
+
+.schm-scale-text {
+  font-size: 12px;
+  fill: #111;
+}
+
+.schm-hint {
+  margin-top: 8px;
+  font-size: 0.85rem;
+  color: #666;
+  text-align: center;
+}
+
+/* Small screens: keep labels readable */
+@media (max-width: 560px) {
+  .schm-title {
+    font-size: 0.95rem;
+  }
+  .schm-hint {
+    font-size: 0.8rem;
+  }
+}

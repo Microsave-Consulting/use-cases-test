@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 function splitValues(value) {
@@ -18,11 +18,36 @@ function colorFor(value, max) {
   const t = value / max;
   const light = { r: 255, g: 245, b: 235 };
   const dark = { r: 153, g: 0, b: 0 };
-  return `rgb(${lerp(light.r, dark.r, t)}, ${lerp(
-    light.g,
-    dark.g,
+  return `rgb(${lerp(light.r, dark.r, t)}, ${lerp(light.g, dark.g, t)}, ${lerp(
+    light.b,
+    dark.b,
     t
-  )}, ${lerp(light.b, dark.b, t)})`;
+  )})`;
+}
+
+function clamp(n, lo, hi) {
+  return Math.max(lo, Math.min(hi, n));
+}
+
+// Observe container width (no dependencies, no CSS overrides)
+function useContainerWidth() {
+  const ref = useRef(null);
+  const [w, setW] = useState(0);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+
+    const ro = new ResizeObserver((entries) => {
+      const cw = entries?.[0]?.contentRect?.width || 0;
+      setW(cw);
+    });
+
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
+
+  return [ref, w];
 }
 
 export default function SectorCountryHeatmap({
@@ -31,6 +56,7 @@ export default function SectorCountryHeatmap({
   topNCountries = 10,
 }) {
   const navigate = useNavigate();
+  const [wrapRef, wrapW] = useContainerWidth();
 
   const { sectors, countries, matrix, maxValue } = useMemo(() => {
     const sectorSet = new Set();
@@ -75,17 +101,34 @@ export default function SectorCountryHeatmap({
     return { sectors: sectorList, countries: topCountries, matrix: mat, maxValue: max };
   }, [items, topNCountries]);
 
-  const cellW = 70;
-  const cellH = 28;
-  const leftLabelW = 260;
-  const bottomLabelH = 70;
+  // ---------- Responsive sizing ----------
+  // Available width (fallback to 900 if not measured yet)
+  const containerW = wrapW || 900;
+
+  // Make left label column responsive (shrinks on mobile, bounded)
+  const leftLabelW = clamp(Math.round(containerW * 0.42), 140, 260);
+
+  // Give a bit more room to bottom labels on small screens
+  const bottomLabelH = containerW < 520 ? 86 : 70;
+
   const colorbarW = 16;
   const gap = 12;
+  const padRight = 26;
+  const padTop = 40;
 
-  const width =
-    leftLabelW + countries.length * cellW + gap + colorbarW + 40;
-  const height =
-    40 + sectors.length * cellH + bottomLabelH;
+  // Compute cell width so the whole matrix fits without horizontal scroll
+  const availableForCells = containerW - leftLabelW - gap - colorbarW - padRight;
+  const cols = Math.max(1, countries.length);
+  const cellW = clamp(Math.floor(availableForCells / cols), 34, 70);
+
+  // Row height can also shrink slightly
+  const cellH = containerW < 520 ? 26 : 28;
+
+  const width = leftLabelW + cols * cellW + gap + colorbarW + padRight;
+  const height = padTop + sectors.length * cellH + bottomLabelH;
+
+  const labelFont = containerW < 520 ? 11 : 12;
+  const valueFont = cellW <= 42 ? 10 : 12;
 
   function go(sector, country, val) {
     if (!val) return;
@@ -96,13 +139,19 @@ export default function SectorCountryHeatmap({
   }
 
   return (
-    <div style={{ width: "100%", overflowX: "auto" }}>
-      <div style={{ width, margin: "0 auto" }}>
+    <div ref={wrapRef} style={{ width: "100%" }}>
+      <div style={{ width: "100%", margin: "0 auto" }}>
         <div style={{ textAlign: "center", fontWeight: 700, marginBottom: 8 }}>
           {title}
         </div>
 
-        <svg width={width} height={height}>
+        {/* SVG now scales to container width */}
+        <svg
+          viewBox={`0 0 ${width} ${height}`}
+          width="100%"
+          style={{ height: "auto", display: "block" }}
+          preserveAspectRatio="xMidYMin meet"
+        >
           {/* Matrix */}
           {matrix.map((row, i) => {
             const y = 30 + i * cellH;
@@ -112,7 +161,7 @@ export default function SectorCountryHeatmap({
                   x={leftLabelW - 10}
                   y={y + cellH / 2 + 4}
                   textAnchor="end"
-                  fontSize="12"
+                  fontSize={labelFont}
                 >
                   {row.sector}
                 </text>
@@ -137,8 +186,9 @@ export default function SectorCountryHeatmap({
                         x={x + cellW / 2}
                         y={y + cellH / 2 + 4}
                         textAnchor="middle"
-                        fontSize="12"
+                        fontSize={valueFont}
                         fontWeight={600}
+                        style={{ pointerEvents: "none" }}
                       >
                         {v}
                       </text>
@@ -159,7 +209,7 @@ export default function SectorCountryHeatmap({
                 x={x}
                 y={y}
                 textAnchor="end"
-                fontSize="11"
+                fontSize={containerW < 520 ? 10 : 11}
                 transform={`rotate(-45 ${x} ${y})`}
               >
                 {c}
@@ -168,9 +218,7 @@ export default function SectorCountryHeatmap({
           })}
 
           {/* Colorbar */}
-          <g
-            transform={`translate(${leftLabelW + countries.length * cellW + gap}, 30)`}
-          >
+          <g transform={`translate(${leftLabelW + cols * cellW + gap}, 30)`}>
             <defs>
               <linearGradient id="sc-heat" x1="0" y1="1" x2="0" y2="0">
                 <stop offset="0%" stopColor={colorFor(0, maxValue)} />
@@ -184,14 +232,10 @@ export default function SectorCountryHeatmap({
               fill="url(#sc-heat)"
               stroke="#e5e7eb"
             />
-            <text x={colorbarW + 6} y={12} fontSize="12">
+            <text x={colorbarW + 6} y={12} fontSize={labelFont}>
               {maxValue}
             </text>
-            <text
-              x={colorbarW + 6}
-              y={sectors.length * cellH}
-              fontSize="12"
-            >
+            <text x={colorbarW + 6} y={sectors.length * cellH} fontSize={labelFont}>
               0
             </text>
           </g>

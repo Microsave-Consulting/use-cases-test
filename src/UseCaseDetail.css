@@ -18,13 +18,21 @@
   gap: 0.75rem;
 }
 
+/* =======================
+   Breadcrumb
+   ======================= */
+
 .ucd-breadcrumb {
   font-size: 0.92rem;
   color: #666;
   margin: 0.75rem 0 1rem;
+
   display: flex;
   align-items: center;
   gap: 0.5rem;
+
+  /* ✅ allow wrap on small screens */
+  flex-wrap: wrap;
 }
 
 .ucd-breadcrumb a {
@@ -43,7 +51,15 @@
 .ucd-crumb-current {
   color: #222;
   font-weight: 600;
+
+  /* ✅ prevent long titles from breaking layout */
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
+
+/* =======================
+   Hero
+   ======================= */
 
 .ucd-hero {
   margin-bottom: 1.25rem;
@@ -56,36 +72,24 @@
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
 }
 
-/* ✅ OPTION C1:
-   - Remove fixed height
-   - Let image define the height
-   - Keep relative positioning for overlay + title
-   - Add a background so "contain" letterboxing looks intentional
-*/
 .ucd-hero-media {
   position: relative;
-  height: auto;            /* was: 280px */
-  background: #e9eef8;     /* behind letterboxing */
+  height: auto;
+  background: #e9eef8; /* behind letterboxing */
 }
 
-/* ✅ Full image, no cropping
-   - width: 100%
-   - height: auto
-   - cap with max-height so tall images don’t take over the page
-   - object-fit: contain is mostly relevant when max-height kicks in
-*/
 .ucd-hero-img {
   width: 100%;
-  height: auto;            /* was: 100% */
+  height: auto;
   display: block;
-  object-fit: contain;     /* ensures no crop if constrained */
-  max-height: 60vh;        /* cap */
+  object-fit: contain;
+  max-height: 60vh;
 }
 
 /* Fallback block should still have a sensible height */
 .ucd-hero-fallback {
   background: linear-gradient(135deg, #e9eef8, #f7f7fb);
-  height: clamp(220px, 35vh, 420px); /* give the fallback a visual presence */
+  height: clamp(220px, 35vh, 420px);
 }
 
 /* Overlay should cover whatever height the media ends up being */
@@ -107,17 +111,25 @@
   left: 1.25rem;
   right: 1.25rem;
   bottom: 1.25rem;
+
   margin: 0;
   color: #fff;
-  font-size: 2rem;
+  font-size: clamp(1.45rem, 2.2vw, 2rem);
   line-height: 1.15;
   font-weight: 700;
+
   max-width: 860px;
   text-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
+
+  /* ✅ critical: allow long titles to wrap */
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 /* =======================
-   Meta pills (match filter pill size)
+   Meta pills (responsive without “override wars”)
+   - Use CSS Grid auto-fit to wrap naturally.
+   - No hard breakpoint needed.
    ======================= */
 
 .ucd-meta {
@@ -127,15 +139,16 @@
 }
 
 .ucd-meta-pill-row {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+
+  /* ✅ This is the key: auto-wraps at any width */
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+
   gap: 0.6rem;
-  align-items: center;
+  align-items: stretch;
 }
 
-/* MATCHES:
-   .ucl-filter-bubble { padding: 0.32rem 0.65rem; font-size: 0.75rem; }
-*/
+/* Matches filter pill size */
 .ucd-meta-pill {
   display: inline-flex;
   align-items: center;
@@ -144,25 +157,34 @@
   border-radius: 999px;
   padding: 0.32rem 0.65rem;
   font-size: 0.75rem;
-  line-height: 1.15;
+  line-height: 1.2;
 
   color: #24304a;
-
   border: 1px solid rgba(0, 0, 0, 0.10);
   box-shadow: 0 1px 0 rgba(0, 0, 0, 0.06);
+
+  /* ✅ allow contents to shrink inside the grid cell */
+  min-width: 0;
+  max-width: 100%;
 }
 
 .ucd-meta-pill-label {
   font-weight: 700;
   color: inherit;
+  white-space: nowrap;
 }
 
 .ucd-meta-pill-value {
   font-weight: 500;
   color: inherit;
+
+  /* ✅ prevent overflow from long values */
+  min-width: 0;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
-/* Match the *selected* shades from UseCaseLibrary filters */
+/* Selected shades (aligned with library filters) */
 .ucd-pill-region {
   background: #95adff;
   border-color: #6f8cff;
@@ -207,6 +229,9 @@
   color: #222;
   line-height: 1.55;
   font-size: 1rem;
+
+  /* ✅ paragraph-safe wrapping */
+  overflow-wrap: anywhere;
 }
 
 .ucd-pill-row {
@@ -223,6 +248,10 @@
   font-size: 0.95rem;
   color: #111;
   background: #fff;
+
+  /* ✅ avoid long tokens breaking layout */
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 .ucd-muted {
@@ -241,21 +270,20 @@
 }
 
 /* =======================
-   Responsive
+   Small screens
+   - ONE small tweak, not a pile of overrides
    ======================= */
 
-@media (max-width: 640px) {
-  /* tighter cap on small screens */
+@media (max-width: 560px) {
+  .ucd-page {
+    padding: 1rem 0.85rem 2.5rem;
+  }
+
   .ucd-hero-img {
     max-height: 50vh;
   }
 
-  .ucd-hero-title {
-    font-size: 1.55rem;
-  }
-
-  .ucd-meta-pill {
-    width: 100%;
-    justify-content: flex-start;
+  .ucd-body {
+    padding: 0.35rem 0.1rem;
   }
 }

@@ -1,0 +1,84 @@
+/* src/widgets/SectorMaturityHeatmap.css */
+
+.smh {
+  width: 100%;
+}
+
+.smh-title {
+  text-align: center;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
+.smh-scroll {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.smh-inner {
+  margin: 0 auto;
+}
+
+.smh-svg {
+  display: block;
+  background: #fff;
+}
+
+.smh-col-header {
+  font-size: 12px;
+  fill: #111827;
+}
+
+.smh-axis {
+  font-size: 12px;
+  fill: #374151;
+}
+
+.smh-row-label {
+  font-size: 12px;
+  fill: #111827;
+}
+
+.smh-rect {
+  stroke: #e5e7eb;
+}
+
+.smh-cell-text {
+  font-size: 12px;
+  font-weight: 600;
+  pointer-events: none;
+}
+
+.smh-cell.is-clickable {
+  cursor: pointer;
+}
+
+.smh-cell.is-clickable:hover .smh-rect {
+  stroke: #94a3b8;
+}
+
+.smh-colorbar {
+  stroke: #e5e7eb;
+}
+
+.smh-scale-text {
+  font-size: 12px;
+  fill: #111827;
+}
+
+.smh-hint {
+  margin-top: 8px;
+  font-size: 0.85rem;
+  color: #666;
+  text-align: center;
+}
+
+@media (max-width: 560px) {
+  .smh-title {
+    font-size: 0.95rem;
+  }
+  .smh-hint {
+    font-size: 0.8rem;
+  }
+}

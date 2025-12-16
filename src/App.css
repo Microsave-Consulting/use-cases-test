@@ -1,442 +1,105 @@
-/* === General page wrapper for the library === */
+/* src/App.css */
 
-.ucl-page {
-  /* ✅ slightly narrower content area so 3 cards look less wide */
-  max-width: 950px;
-  margin: 0 auto;
-
-  /* ✅ slightly larger left/right margins (via padding) */
-  padding: 1.5rem 2.25rem 3rem;
-
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
-    sans-serif;
+/* Minimal baseline */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
 }
 
-.ucl-page-center {
-  min-height: 60vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 0.75rem;
-}
-
-/* === Header === */
-
-.ucl-header {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  margin-bottom: 1.5rem;
-}
-
-.ucl-title {
+body {
   margin: 0;
-  font-size: 1.8rem;
-  font-weight: 600;
 }
 
-.ucl-subtitle {
-  margin: 0.25rem 0 0;
-  font-size: 0.95rem;
-  color: #555;
+/* Tokens */
+:root {
+  --container-max: 1200px;
+  --page-pad-x: 16px;
+  --page-pad-y: 16px;
+
+  --border: #ddd;
+  --text: #111;
+  --muted: #555;
+  --bg: #fff;
+
+  --radius: 10px;
 }
 
-/* === Search + filter bar === */
+@media (max-width: 520px) {
+  :root {
+    --page-pad-x: 12px;
+    --page-pad-y: 12px;
+  }
+}
 
-.ucl-filter-bar {
+/* App shell */
+.app {
+  min-height: 100vh;
+  background: var(--bg);
+  color: var(--text);
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+.app-container {
+  max-width: var(--container-max);
+  margin: 0 auto;
+  padding: 0 var(--page-pad-x);
+}
+
+.app-header {
+  border-bottom: 1px solid var(--border);
+  background: var(--bg);
+}
+
+.app-nav {
   display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  margin-bottom: 1.25rem;
-}
-
-.ucl-search-wrapper {
-  width: 100%;
-  display: flex;
-  justify-content: center;
-}
-
-/* Pill-style search bar */
-
-.ucl-search-bar {
-  display: flex;
+  gap: 12px;
   align-items: center;
-  background: #27376b; /* original dark blue */
-  color: #fff;
-  border-radius: 999px;
-  padding: 0.4rem 0.75rem 0.4rem 1.1rem;
-  max-width: 780px;
-  width: 100%;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.16);
+  padding: 12px 0;
+  flex-wrap: wrap;
 }
 
-.ucl-search-icon {
-  font-size: 1.2rem;
-  margin-right: 0.6rem;
-}
-
-.ucl-search-input {
-  flex: 1;
-  border: none;
-  background: transparent;
-  color: #fff;
-  padding: 0.6rem 0;
-  font-size: 0.95rem;
-  outline: none;
-}
-
-.ucl-search-input::placeholder {
-  color: rgba(255, 255, 255, 0.8);
-}
-
-/* round yellow arrow button */
-
-.ucl-search-submit {
-  border: none;
-  border-radius: 999px;
-  width: 42px;
-  height: 42px;
-  margin-left: 0.6rem;
-  background: #f2a93b; /* reference yellow */
-  color: #27376b;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.1rem;
-  cursor: pointer;
-}
-
-.ucl-search-submit:hover {
-  background: #f6b652;
-}
-
-/* =========================================================
-   FILTER CAPSULES — PASTELS + STRONGER SELECTED
-   Actual order (left→right, top→bottom):
-   1) Region / Sub Region
-   2) Sector
-   3) Country
-   4) Maturity
-   5) Accessibility
-   6) Auth Modality
-   (7 Assurance hidden)
-   ========================================================= */
-
-/* Two rows, three columns */
-.ucl-filters-wrapper {
-  display: grid;
-  grid-template-columns: repeat(3, 230px);
-  column-gap: 1.25rem;
-  row-gap: 0.6rem;
-  align-items: start;
-  justify-content: center;
-}
-
-/* Ensure grid fill */
-.ucl-filter-bubble-wrapper {
-  position: relative;
-  width: 230px;
-}
-
-/* Capsule base */
-.ucl-filter-bubble {
-  width: 100%;
+.app-nav-link {
   display: inline-flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 0.5rem;
-
-  border-radius: 999px;
-  padding: 0.32rem 0.65rem;
-  font-size: 0.75rem;
-
-  cursor: pointer;
-  white-space: nowrap;
-
-  color: #24304a;
-  border: 1px solid transparent;
-
-  /* make transitions feel crisp */
-  transition: background 120ms ease, border-color 120ms ease, filter 120ms ease;
-}
-
-.ucl-filter-bubble-primary,
-.ucl-filter-bubble-secondary {
-  color: inherit;
-  border-color: inherit;
-  background: inherit;
-}
-
-.ucl-filter-bubble:hover {
-  filter: brightness(0.98);
-}
-
-/* Stop giant pills */
-.ucl-filter-summary {
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-/* ---------- Pastel mapping by position ---------- */
-/* We also define CSS variables per-pill to reuse for dropdown styling */
-
-.ucl-filters-wrapper > .ucl-filter-bubble-wrapper:nth-child(1) {
-  --pill-bg: #e9efff;      /* Region: soft blue */
-  --pill-border: #cfdcff;
-  --pill-selected: #95adff; /* darker selected */
-  --pill-selected-border: #6f8cff;
-}
-
-.ucl-filters-wrapper > .ucl-filter-bubble-wrapper:nth-child(2) {
-  --pill-bg: #eaf7ef;       /* Sector: soft green */
-  --pill-border: #cfe9db;
-  --pill-selected: #7fd3a6; /* darker selected */
-  --pill-selected-border: #53bf86;
-}
-
-.ucl-filters-wrapper > .ucl-filter-bubble-wrapper:nth-child(3) {
-  --pill-bg: #f1eaff;       /* Country: soft purple */
-  --pill-border: #e0d1ff;
-  --pill-selected: #b08cff; /* darker selected */
-  --pill-selected-border: #8f63ff;
-}
-
-.ucl-filters-wrapper > .ucl-filter-bubble-wrapper:nth-child(4) {
-  --pill-bg: #fff1e6;       /* Maturity: soft orange */
-  --pill-border: #ffd8bd;
-  --pill-selected: #ffad6a; /* darker selected */
-  --pill-selected-border: #ff8b3d;
-}
-
-.ucl-filters-wrapper > .ucl-filter-bubble-wrapper:nth-child(5) {
-  --pill-bg: #e6fbfb;       /* Accessibility: soft teal */
-  --pill-border: #bfeff1;
-  --pill-selected: #5fd1d6; /* darker selected */
-  --pill-selected-border: #27b9c0;
-}
-
-.ucl-filters-wrapper > .ucl-filter-bubble-wrapper:nth-child(6) {
-  --pill-bg: #ffe9f0;       /* Auth: soft rose */
-  --pill-border: #ffd0df;
-  --pill-selected: #ff86ad; /* darker selected */
-  --pill-selected-border: #ff5f92;
-}
-
-/* Apply variables to pill visuals */
-.ucl-filter-bubble-wrapper .ucl-filter-bubble {
-  background: var(--pill-bg);
-  border-color: var(--pill-border);
-}
-
-.ucl-filter-bubble-wrapper .ucl-filter-bubble.ucl-filter-bubble-selected {
-  background: var(--pill-selected);
-  border-color: var(--pill-selected-border);
-  color: #1f2a44;
-}
-
-/* Hide Assurance Levels filter (safety net) */
-.ucl-filters-wrapper > .ucl-filter-bubble-wrapper:nth-child(7) {
-  display: none;
-}
-
-/* =========================================================
-   DROPDOWN — revert to plain white box, but tint to pill color
-   ========================================================= */
-
-.ucl-filter-dropdown {
-  position: absolute;
-  top: 110%;
-  left: 0;
-  z-index: 20;
-  min-width: 220px;
-  max-height: 260px;
-  overflow-y: auto;
-
-  background: #ffffff;              /* ✅ back to plain white */
-  border-radius: 0.75rem;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
-  padding: 0.4rem;
-
-  /* ✅ match the pill color (subtle) */
-  border: 1px solid var(--pill-border);
-}
-
-/* options */
-.ucl-filter-option {
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
-  padding: 0.25rem 0.4rem;
-  border-radius: 0.5rem;
-  cursor: pointer;
-  font-size: 0.8rem;
-}
-
-.ucl-filter-option:hover {
-  background: rgba(0, 0, 0, 0.04);
-}
-
-/* active option highlight uses the pill base */
-.ucl-filter-option-active {
-  background: var(--pill-bg);
-}
-
-.ucl-filter-checkbox {
-  width: 1rem;
-  height: 1rem;
-  border-radius: 0.25rem;
-  border: 1px solid var(--pill-selected-border);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 0.7rem;
-  color: #1f2a44;
-}
-
-/* checked box uses the pill "selected" shade */
-.ucl-filter-option-active .ucl-filter-checkbox {
-  background: var(--pill-selected);
-  border-color: var(--pill-selected-border);
-  color: #1f2a44;
-}
-
-.ucl-filter-option-label {
-  flex: 1;
-}
-
-.ucl-filter-empty {
-  font-size: 0.8rem;
-  padding: 0.25rem 0.4rem;
-  color: #666;
-}
-
-/* Clear filters pill (keep as blue CTA) */
-.ucl-clear-filters {
-  grid-column: 1 / -1;
-  justify-self: end;
-
-  border-radius: 999px;
-  padding: 0.35rem 0.7rem;
-  font-size: 0.75rem;
-
-  background: #27376b;
-  color: #fff;
-  border: 1px solid #1f2c57;
-  cursor: pointer;
+  gap: 8px;
+  padding: 10px 12px;
+  border-radius: var(--radius);
   text-decoration: none;
+  color: var(--muted);
+  border: 1px solid transparent;
 }
 
-.ucl-clear-filters:hover {
-  filter: brightness(1.05);
+.app-nav-link:hover {
+  border-color: var(--border);
+  color: var(--text);
 }
 
-/* === Result summary === */
-
-.ucl-results-summary {
-  font-size: 0.85rem;
-  color: #444;
-  margin-bottom: 0.5rem;
+.app-nav-link.is-active {
+  color: var(--text);
+  border-color: var(--border);
+  background: #f7f7f7;
 }
 
-/* === Cards grid === */
-
-.ucl-cards-grid {
-  display: grid;
-
-  /* ✅ keep 3 per row, but reduce min width so each card is narrower */
-  grid-template-columns: repeat(3, minmax(240px, 1fr));
-
-  gap: 0.9rem;
+/* Main area */
+.app-main {
+  padding: var(--page-pad-y) 0;
 }
 
-.ucl-card {
-  border-radius: 0.9rem;
-  border: 1px solid #e2e6f0;
-  padding: 0.75rem 0.9rem 0.8rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.4rem;
-  background: #fff;
-  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.03);
+/* Home (full-bleed) */
+.app-main-full {
+  width: 100%;
+  padding-left: 0;
+  padding-right: 0;
 }
 
-.ucl-card-title {
-  font-size: 0.95rem;
-  font-weight: 600;
+/* Other pages (contained) */
+.app-main-contained {
+  width: 100%;
 }
 
-.ucl-card-meta,
-.ucl-card-meta-sub {
-  font-size: 0.78rem;
-  color: #666;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.25rem;
-}
-
-.ucl-card-body {
-  font-size: 0.8rem;
-  color: #333;
-  line-height: 1.4;
-}
-
-.ucl-card-tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.25rem;
-  margin-top: 0.3rem;
-}
-
-.ucl-tag-pill {
-  border-radius: 999px;
-  border: 1px solid #dde3f0;
-  padding: 0.1rem 0.5rem;
-  font-size: 0.7rem;
-  color: #26436b;
-  background: #f6f8fc;
-}
-
-/* Buttons */
-
-.ucl-btn {
-  padding: 0.4rem 0.8rem;
-  border-radius: 999px;
-  border: none;
-  background: #26436b;
-  color: #fff;
-  font-size: 0.8rem;
-  cursor: pointer;
-}
-
-.ucl-btn:hover {
-  background: #1e3556;
-}
-
-/* Empty state */
-
-.ucl-empty-state {
-  margin-top: 2rem;
-  text-align: center;
-  font-size: 0.9rem;
-  color: #555;
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-  align-items: center;
-}
-
-/* Make cards clearly clickable */
-.ucl-card-clickable {
-  cursor: pointer;
-}
-
-.ucl-card-clickable:hover {
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
-}
-
-.ucl-card-clickable:focus {
-  outline: 2px solid rgba(30, 58, 138, 0.5);
-  outline-offset: 2px;
+.app-main-contained > * {
+  max-width: var(--container-max);
+  margin: 0 auto;
+  padding: 0 var(--page-pad-x);
 }

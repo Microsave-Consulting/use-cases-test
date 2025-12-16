@@ -1,13 +1,8 @@
+// src/widgets/UseCaseSectorPie.jsx
 import { useMemo } from "react";
-import {
-  PieChart,
-  Pie,
-  Cell,
-  Tooltip,
-  Legend,
-  ResponsiveContainer,
-} from "recharts";
+import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer } from "recharts";
 import { useNavigate } from "react-router-dom";
+import "./UseCaseSectorPie.css";
 
 // Split "A, B, C" → ["A", "B", "C"]
 function splitValues(value) {
@@ -59,19 +54,16 @@ function makeDualLabelRenderer({ showLeaderLine = false, minPercentForLabels = 0
 
     const RADIAN = Math.PI / 180;
 
-    // Inside position (percentage)
     const rInside = outerRadius * 0.6;
     const xInside = cx + rInside * Math.cos(-midAngle * RADIAN);
     const yInside = cy + rInside * Math.sin(-midAngle * RADIAN);
 
-    // Outside position (sector name)
     const rOutside = outerRadius * 1.05;
     const xOutside = cx + rOutside * Math.cos(-midAngle * RADIAN);
     const yOutside = cy + rOutside * Math.sin(-midAngle * RADIAN);
 
     const textAnchor = xOutside > cx ? "start" : "end";
 
-    // Optional leader line points
     const rLineStart = outerRadius * 1.02;
     const xLineStart = cx + rLineStart * Math.cos(-midAngle * RADIAN);
     const yLineStart = cy + rLineStart * Math.sin(-midAngle * RADIAN);
@@ -89,7 +81,6 @@ function makeDualLabelRenderer({ showLeaderLine = false, minPercentForLabels = 0
           />
         ) : null}
 
-        {/* Percentage inside slice */}
         <text
           x={xInside}
           y={yInside}
@@ -102,7 +93,6 @@ function makeDualLabelRenderer({ showLeaderLine = false, minPercentForLabels = 0
           {(percent * 100).toFixed(1)}%
         </text>
 
-        {/* Sector name outside */}
         <text
           x={xOutside}
           y={yOutside}
@@ -137,10 +127,11 @@ export default function UseCaseSectorPie({
   items,
   title = "Distribution of Use Cases by Sector",
   topN = 10,
-  height = 520,
   showLegend = false,
   showLeaderLine = false,
   minPercentForLabels = 0.04,
+  // default responsive height (CSS also enforces a sensible min)
+  height = 420,
 }) {
   const navigate = useNavigate();
 
@@ -154,31 +145,28 @@ export default function UseCaseSectorPie({
 
   function goToSector(sector) {
     if (!sector) return;
-    if (sector === "Other") return; // optional
+    if (sector === "Other") return;
 
     const params = new URLSearchParams();
-    params.set("sector", sector); // ✅ MUST match UCL (?sector=...)
+    params.set("sector", sector);
     navigate(`/library?${params.toString()}`);
   }
 
-  // Recharts sends (data, index) where data.payload is the original data row
   function handleSliceClick(d) {
     const sectorName = d?.name || d?.payload?.name;
     goToSector(sectorName);
   }
 
   return (
-    <div style={{ width: "100%" }}>
+    <section className="ucsp">
       {title ? (
-        <div style={{ textAlign: "center", marginBottom: "0.75rem" }}>
-          <h2 style={{ margin: 0 }}>{title}</h2>
-          <div style={{ fontSize: "0.9rem", opacity: 0.75 }}>
-            Total sector-tags counted: {total}
-          </div>
+        <div className="ucsp-header">
+          <h2 className="ucsp-title">{title}</h2>
+          <div className="ucsp-subtitle">Total sector-tags counted: {total}</div>
         </div>
       ) : null}
 
-      <div style={{ width: "100%", height }}>
+      <div className="ucsp-chart" style={{ height }}>
         <ResponsiveContainer>
           <PieChart>
             <Pie
@@ -187,10 +175,11 @@ export default function UseCaseSectorPie({
               nameKey="name"
               cx="50%"
               cy="50%"
-              outerRadius={Math.min(190, Math.max(120, height * 0.35))}
+              // Keep radius responsive: tied to chart height, but with bounds
+              outerRadius={Math.min(180, Math.max(110, height * 0.33))}
               labelLine={false}
               label={renderDualLabel}
-              onClick={handleSliceClick} // ✅ click on slice navigates
+              onClick={handleSliceClick}
             >
               {data.map((entry, idx) => {
                 const clickable = entry?.name !== "Other";
@@ -198,7 +187,7 @@ export default function UseCaseSectorPie({
                   <Cell
                     key={entry.name || idx}
                     fill={COLORS[idx % COLORS.length]}
-                    style={{ cursor: clickable ? "pointer" : "default" }}
+                    className={clickable ? "ucsp-slice is-clickable" : "ucsp-slice"}
                   />
                 );
               })}
@@ -209,6 +198,6 @@ export default function UseCaseSectorPie({
           </PieChart>
         </ResponsiveContainer>
       </div>
-    </div>
+    </section>
   );
 }
