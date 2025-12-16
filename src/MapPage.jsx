@@ -35,21 +35,27 @@ export default function MapPage() {
 
   return (
     <div className="map-page">
+      {/* Keep the world heatmap on top */}
       <section className="map-section">
         <UseCaseHeatmap items={items} />
       </section>
 
-      <section className="map-section">
-        <SectorCountryHeatmap items={items} topNCountries={10} />
-      </section>
-
-      <section className="map-grid">
-        <div className="map-panel">
+      {/* 2x2 table layout */}
+      <section className="map-grid-2x2">
+        <div className="map-cell">
           <UseCaseSectorPie items={items} />
         </div>
 
-        <div className="map-panel">
+        <div className="map-cell">
+          <SectorCountryHeatmap items={items} topNCountries={10} />
+        </div>
+
+        <div className="map-cell">
           <SectorMaturityHeatmap items={items} />
+        </div>
+
+        <div className="map-cell map-placeholder">
+          <div className="map-placeholder-text">Content goes here</div>
         </div>
       </section>
     </div>
