@@ -1,0 +1,29 @@
+{
+  "IsEncrypted": false,
+  "Values": {
+    "WEBSITE_CONTENTAZUREFILECONNECTIONSTRING": "DefaultEndpointsProtocol=https;AccountName=centreforresponsibla983;AccountKey=Me4V12P6RpmeGG6fMN9u16a5b8I/3btrwpHS8YXLd8o5GgqmafPYXm5B3Su4F8ifIY36nCTA4TBi+AStlYykXw==;EndpointSuffix=core.windows.net",
+    "SP_LIST_ID": "e2722391-2399-41f2-a67a-ff07b4075f0e",
+    "WEBSITE_SLOT_NAME": "Production",
+    "FUNCTIONS_EXTENSION_VERSION": "~4",
+    "SP_SITE_URL": "https://microsaveindia.sharepoint.com/sites/CentreforResponsibleTechnologies",
+    "WEBSITE_AUTH_ENABLED": "False",
+    "CERT_PRIVATE_KEY": "-----BEGIN PRIVATE KEY----- MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQDMirafonp0I4xr 0QUkZ87NZUf/SRxiurrrCML6NQD0L83Dy3Q+BZQAi49JsaRMFiyL9UKZJemdN/+y XPRJLaL82OEaOb5DNWxrU2QVkrnDtPP09k3MfuvpkyWAM9X+imYxHLZEM0g30rPh KzafCUHSd7hHV8wyoTIm2KibO99aSm0uuooC6mLP8g8yqxVDgIVlsIOl0N5OjU5E vBcXCW9zmUU5RUR68ZtdbRYGzzX2juPKFf1vVCbFhEpsQDZS9SLcS6n2UhBn5TEJ Ei/ultEJRgvzVUi9LPS+H2SvSprIAXu64/5Cr2FVOUKG+dNy4Yvba4IoIO3a7voM zHQECC/9AgMBAAECggEAYx+WASasUTwpANb6tvnXrpI2ofC8YNw9WUmVs8ub+rpv 7ULbwnLRlrILbps4E+drDyh8bduBqz9IGxgRCqWjJwWzkRIKsmdhc2GmTw4cGEvJ Lh1u9ntLuJYmxkpYmlJX09UmP0ba6LKjmatnfQrvax+5nlleC+sycsDsdM4/H3G0 ML1NY42HbUsQ7ve2CtJAlRQRv7ib3hpMOBwYjx0oi/leUBzMx/LygBkI/DP8kfet 5NvUVyOoJBLmkM+i/LIKKXsNDzXJU1ikZzvaNOHqby2OuZ4HK0b1Z68GlLbXBkmU dgtWbtcy+7UNkzqA4/6eJNi4ddJLhK/D1CIzIFO/wQKBgQDdp0+LIqh6LPBKfn/1 QwcD8gGUR0ExW0KivSXu5codA+C5umr05nGUKv+SYbtIlRaf8HE0pNupunADqEsN CtdWCsBEkovdU4RIyHt4PaxolNXwaFHzsyKInLFDKuWbvg6n0r0IQQ5CxYska6vh FY3sa6ESTH3v1ZBQ1tufaiojwwKBgQDsPJrbiDa6ox2jvHtNYL8OWqBOhEPg3rx3 BUM5xUFz5O/J990LUXB3wsczxZociOZGdRmN9Tkr3E3Wyr4wypc7YSwJWncz6KSN ddmj0v6ITQnafFZAdVtHg8vnc6ZJu+shzlxAua9KhAIhIpcqvEAhqmpgx9Fo4Oj5 ZZwrYCnhPwKBgHurnFAPOF1isXd++ToI+eMTphnrX86AEr/mNUID6C8kOMCn6IFY CksXap1r9ijbNlJqv18WFJGwukrwHV/biqYxPXGFKpCExqwtX+aI0qdPU8bdDcyh SEVc1/KX/qBU/KxagqoWUjSjL61UfgQKGLOuoaIqF6I3UFwqZUOe4oAtAoGBAKOU A5bn5x2tPSTXqnmV+DW0QzSbGXVoRhAUMMyb7gqWCAROAV2I8tu6n70VovUHRoyb ISrPFttsHOoSUUfvwHB5hMilP81N1kOtyxpJS76Nubj0R7UyjhYjCNonlomP+eza u76F1P9AEUlobkxFNhMZsbd6JWL9+dRXq5/NYrJ5AoGAW0xwwZ++tnURXsSYkXAk LjmKFNwrcVp1ldDAVtHCJ/iMchyoj6bJGrzXKAMEk/qRENYhj2L0os3gUQVs3tHz 2TrFnwUpP07lCay8gmsh8WZMhvbAqoA+zq5GLx/FUQJJhuhEx9DmV8EIrruQJd4e D0sRdOQx+AU/YMPzuhhF4P4= -----END PRIVATE KEY-----",
+    "CERT_THUMBPRINT": "40315F8BC77546F7610A003FC59B20F49B949F4F",
+    "CLIENT_SECRET": "Eq38Q~GXkxBa2hsjvhD8Gqo2pdQx1TRmsK-oicbF",
+    "APPLICATIONINSIGHTS_CONNECTION_STRING": "InstrumentationKey=c9802d5a-bfa5-4f20-8003-6ca081543aac;IngestionEndpoint=https://centralindia-0.in.applicationinsights.azure.com/;LiveEndpoint=https://centralindia.livediagnostics.monitor.azure.com/;ApplicationId=2554fa92-0299-4d3f-8289-b762b3c7896b",
+    "SP_LIST_ASSETS": "Assets",
+    "SP_LIST_PAGES": "Pages",
+    "CLIENT_ID": "8d7c24fa-f712-4fd4-8195-e3d6236a2e93",
+    "WEBSITE_NODE_DEFAULT_VERSION": "22.17.1",
+    "ScmType": "None",
+    "WEBSITE_CONTENTSHARE": "functionapp-usecasediagnostics97d9",
+    "FUNCTIONS_WORKER_RUNTIME": "node",
+    "WEBSITE_DEFAULT_HOSTNAME": "functionapp-usecasediagnostics-e2a3age6eeb2ghaa.centralindia-01.azurewebsites.net",
+    "SP_LIST_TITLE": "projUCLib-UseCaseMasterList",
+    "SP_LIST_SECTIONITEMS": "SectionItems",
+    "TENANT_ID": "8118e33d-9d44-44a8-b60f-64772a910f19",
+    "AzureWebJobsStorage": "DefaultEndpointsProtocol=https;AccountName=centreforresponsibla983;AccountKey=Me4V12P6RpmeGG6fMN9u16a5b8I/3btrwpHS8YXLd8o5GgqmafPYXm5B3Su4F8ifIY36nCTA4TBi+AStlYykXw==;EndpointSuffix=core.windows.net",
+    "SP_LIST_SECTIONS": "Sections",
+    "WEBSITE_SITE_NAME": "functionapp-usecasediagnostics"
+  }
+}
