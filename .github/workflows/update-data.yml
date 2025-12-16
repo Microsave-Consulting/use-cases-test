@@ -34,10 +34,11 @@ jobs:
           AZURE_FUNC_URL_DATA: ${{ secrets.AZURE_FUNC_URL_DATA }}
           AZURE_FUNC_KEY: ${{ secrets.AZURE_FUNC_KEY }}
 
-      - name: Export cover images and build final JSON
+      - name: Export thumbnails + cover images and build final JSON
         run: |
           node scripts/export_images_and_json.cjs
         env:
+          # Unified image endpoint that supports kind=thumbnail|cover
           AZURE_FUNC_URL_IMAGE: ${{ secrets.AZURE_FUNC_URL_IMAGE }}
           AZURE_FUNC_KEY: ${{ secrets.AZURE_FUNC_KEY }}
 
@@ -49,13 +50,14 @@ jobs:
 
           rm -f public/data/use_cases.raw.json
 
+          # JSON + both image types (folder naming depends on your script output)
           git add public/data/use_cases.json public/images/use-cases
 
           if git diff --cached --quiet; then
             echo "No changes"
             echo "any_changed=false" >> "$GITHUB_OUTPUT"
           else
-            git commit -m "Update JSON snapshot and cover images"
+            git commit -m "Update JSON snapshot, thumbnails, and cover images"
             git push
             echo "any_changed=true" >> "$GITHUB_OUTPUT"
           fi

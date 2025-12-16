@@ -56,22 +56,39 @@
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
 }
 
+/* ✅ OPTION C1:
+   - Remove fixed height
+   - Let image define the height
+   - Keep relative positioning for overlay + title
+   - Add a background so "contain" letterboxing looks intentional
+*/
 .ucd-hero-media {
   position: relative;
-  height: 280px;
+  height: auto;            /* was: 280px */
+  background: #e9eef8;     /* behind letterboxing */
 }
 
+/* ✅ Full image, no cropping
+   - width: 100%
+   - height: auto
+   - cap with max-height so tall images don’t take over the page
+   - object-fit: contain is mostly relevant when max-height kicks in
+*/
 .ucd-hero-img {
   width: 100%;
-  height: 100%;
-  object-fit: cover;
+  height: auto;            /* was: 100% */
   display: block;
+  object-fit: contain;     /* ensures no crop if constrained */
+  max-height: 60vh;        /* cap */
 }
 
+/* Fallback block should still have a sensible height */
 .ucd-hero-fallback {
   background: linear-gradient(135deg, #e9eef8, #f7f7fb);
+  height: clamp(220px, 35vh, 420px); /* give the fallback a visual presence */
 }
 
+/* Overlay should cover whatever height the media ends up being */
 .ucd-hero-overlay {
   position: absolute;
   inset: 0;
@@ -82,6 +99,7 @@
     rgba(0, 0, 0, 0.05) 75%,
     rgba(0, 0, 0, 0) 100%
   );
+  pointer-events: none;
 }
 
 .ucd-hero-title {
@@ -124,8 +142,8 @@
   gap: 0.4rem;
 
   border-radius: 999px;
-  padding: 0.32rem 0.65rem; /* ✅ same as filter pills */
-  font-size: 0.75rem;       /* ✅ same as filter pills */
+  padding: 0.32rem 0.65rem;
+  font-size: 0.75rem;
   line-height: 1.15;
 
   color: #24304a;
@@ -134,7 +152,6 @@
   box-shadow: 0 1px 0 rgba(0, 0, 0, 0.06);
 }
 
-/* Keep label bold but not oversized */
 .ucd-meta-pill-label {
   font-weight: 700;
   color: inherit;
@@ -228,15 +245,15 @@
    ======================= */
 
 @media (max-width: 640px) {
-  .ucd-hero-media {
-    height: 240px;
+  /* tighter cap on small screens */
+  .ucd-hero-img {
+    max-height: 50vh;
   }
 
   .ucd-hero-title {
     font-size: 1.55rem;
   }
 
-  /* stack pills on mobile similar to dropdown bubbles */
   .ucd-meta-pill {
     width: 100%;
     justify-content: flex-start;

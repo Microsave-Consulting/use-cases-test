@@ -1,9 +1,14 @@
-// scripts/process_use_cases_with_images.js
+// scripts/export_images_and_json.cjs
 // Purpose:
 // 1) Read SharePoint-exported raw JSON (public/data/use_cases.raw.json)
-// 2) For items with attachments, download cover image via Azure Function
-// 3) Save cover as cover.<ext> (png/jpg/webp/gif) based on response headers
-// 4) Write normalized JSON (public/data/use_cases.json) with correct CoverImage/Images paths
+// 2) For items with attachments, download:
+//    a) Thumbnail via Azure Function (?kind=thumbnail)
+//    b) Cover via Azure Function (?kind=cover)
+// 3) Save as thumbnail.<ext> and cover.<ext> based on response headers
+// 4) Write normalized JSON (public/data/use_cases.json) with:
+//    - Thumbnail (relative path)
+//    - CoverImage (relative path)
+//    - Images = [CoverImage] (back-compat)
 
 const fs = require("fs");
 const path = require("path");
@@ -32,7 +37,7 @@ fs.mkdirSync(imagesRoot, { recursive: true });
 
 function parseHeaderFileToMap(headerText) {
   // curl -D outputs headers; redirects can produce multiple header blocks.
-  // We use the LAST header block (final response).
+  // Use the LAST header block (final response).
   const blocks = headerText
     .split(/\r?\n\r?\n/)
     .map((b) => b.trim())
@@ -53,8 +58,10 @@ function parseHeaderFileToMap(headerText) {
 }
 
 function filenameFromContentDisposition(cd = "") {
-  // Handles: inline; filename="cover.png"
-  // Also tolerates filename*=UTF-8''cover.png
+  // Handles:
+  // - inline; filename="cover.png"
+  // - attachment; filename=cover.png
+  // - filename*=UTF-8''cover.png
   const m = String(cd).match(/filename\*?=(?:UTF-8''|")?([^;"\r\n"]+)/i);
   if (!m) return null;
   return m[1].replace(/"/g, "").trim();
@@ -78,17 +85,16 @@ function isSupportedImageExt(ext = "") {
   return ["png", "jpg", "jpeg", "webp", "gif"].includes(String(ext).toLowerCase());
 }
 
-function cleanOldCovers(folder) {
-  // Remove any previously saved cover.* to prevent stale files lingering.
-  // Keep only non-cover assets.
+function cleanOldImages(folder) {
+  // Remove any stale cover.* / thumbnail.* and temp/header artifacts
   const files = fs.existsSync(folder) ? fs.readdirSync(folder) : [];
   for (const f of files) {
-    if (/^cover\.(png|jpe?g|webp|gif|tmp)$/i.test(f)) {
+    if (/^(cover|thumbnail)\.(png|jpe?g|webp|gif|tmp)$/i.test(f)) {
       try {
         fs.unlinkSync(path.join(folder, f));
       } catch {}
     }
-    if (/^headers\.txt$/i.test(f)) {
+    if (/^headers\.(cover|thumbnail)\.txt$/i.test(f)) {
       try {
         fs.unlinkSync(path.join(folder, f));
       } catch {}
@@ -96,17 +102,75 @@ function cleanOldCovers(folder) {
   }
 }
 
-let downloaded = 0;
+function buildImageUrl(itemId, kind) {
+  // Azure Functions key via querystring
+  return `${baseImageUrl}?itemId=${encodeURIComponent(itemId)}&kind=${encodeURIComponent(
+    kind
+  )}&code=${encodeURIComponent(key)}`;
+}
+
+function downloadKind({ id, folder, kind }) {
+  const tmpFile = path.join(folder, `${kind}.tmp`);
+  const headerFile = path.join(folder, `headers.${kind}.txt`);
+  const url = buildImageUrl(id, kind);
+
+  // Download body + headers
+  // -sSL: silent + follow redirects
+  // -D: write headers to file
+  // -o: write body to tmp file
+  execFileSync("curl", ["-sSL", "-D", headerFile, url, "-o", tmpFile], {
+    stdio: "inherit",
+  });
+
+  const st = fs.statSync(tmpFile);
+  if (st.size === 0) throw new Error(`${kind} download is empty`);
+
+  const headersText = fs.readFileSync(headerFile, "utf8");
+  const headers = parseHeaderFileToMap(headersText);
+
+  const cd = headers.get("content-disposition") || "";
+  const ct = headers.get("content-type") || "";
+
+  const servedName = filenameFromContentDisposition(cd);
+  let ext = extFromFilename(servedName) || extFromContentType(ct);
+
+  // Normalize jpeg -> jpg
+  if (ext === "jpeg") ext = "jpg";
+
+  if (!ext || !isSupportedImageExt(ext)) {
+    ext = "jpg"; // last-resort fallback
+  }
+
+  const outFile = path.join(folder, `${kind}.${ext}`);
+  fs.renameSync(tmpFile, outFile);
+
+  // Cleanup headers file
+  try {
+    fs.unlinkSync(headerFile);
+  } catch {}
+
+  const rel = `/images/use-cases/${id}/${kind}.${ext}`;
+  return rel;
+}
+
 let skipped = 0;
-let failed = 0;
+
+let coverDownloaded = 0;
+let coverFailed = 0;
+
+let thumbDownloaded = 0;
+let thumbFailed = 0;
 
 for (const it of items) {
   const id = it.ID ?? it.Id ?? it.id;
   if (!id) continue;
 
+  // Default outputs
+  it.Thumbnail = null;
+  it.CoverImage = null;
+  it.Images = [];
+
   if (!it.Attachments) {
-    it.Images = [];
-    it.CoverImage = null;
     skipped++;
     continue;
   }
@@ -114,72 +178,51 @@ for (const it of items) {
   const folder = path.join(imagesRoot, String(id));
   fs.mkdirSync(folder, { recursive: true });
 
-  // IMPORTANT: remove any stale cover.* from prior runs
-  cleanOldCovers(folder);
+  // Remove stale files from prior runs
+  cleanOldImages(folder);
 
-  const url = `${baseImageUrl}?itemId=${encodeURIComponent(id)}&code=${encodeURIComponent(
-    key
-  )}`;
-
-  const tmpFile = path.join(folder, "cover.tmp");
-  const headerFile = path.join(folder, "headers.txt");
-
+  // Thumbnail first (library card)
   try {
-    // Download body + headers
-    // -sSL: silent + follow redirects + show errors on failure
-    // -D: write headers to file
-    // -o: write body to tmp file
-    execFileSync("curl", ["-sSL", "-D", headerFile, url, "-o", tmpFile], {
-      stdio: "inherit",
-    });
-
-    const st = fs.statSync(tmpFile);
-    if (st.size === 0) throw new Error("Downloaded file is empty");
-
-    const headersText = fs.readFileSync(headerFile, "utf8");
-    const headers = parseHeaderFileToMap(headersText);
-
-    const cd = headers.get("content-disposition") || "";
-    const ct = headers.get("content-type") || "";
-
-    const servedName = filenameFromContentDisposition(cd);
-    let ext = extFromFilename(servedName) || extFromContentType(ct);
-
-    // Normalize jpeg -> jpg
-    if (ext === "jpeg") ext = "jpg";
-
-    if (!ext || !isSupportedImageExt(ext)) {
-      // Last-resort fallback
-      ext = "jpg";
-    }
-
-    const outFile = path.join(folder, `cover.${ext}`);
-    fs.renameSync(tmpFile, outFile);
-
-    // Cleanup headers file
-    try {
-      fs.unlinkSync(headerFile);
-    } catch {}
-
-    const rel = `/images/use-cases/${id}/cover.${ext}`;
-    it.Images = [rel];
-    it.CoverImage = rel;
-
-    downloaded++;
+    const relThumb = downloadKind({ id, folder, kind: "thumbnail" });
+    it.Thumbnail = relThumb;
+    thumbDownloaded++;
   } catch (e) {
     // Cleanup partials
     try {
-      if (fs.existsSync(tmpFile)) fs.unlinkSync(tmpFile);
+      const tmp = path.join(folder, "thumbnail.tmp");
+      if (fs.existsSync(tmp)) fs.unlinkSync(tmp);
     } catch {}
     try {
-      if (fs.existsSync(headerFile)) fs.unlinkSync(headerFile);
+      const hf = path.join(folder, "headers.thumbnail.txt");
+      if (fs.existsSync(hf)) fs.unlinkSync(hf);
     } catch {}
 
-    it.Images = [];
-    it.CoverImage = null;
+    it.Thumbnail = null;
+    thumbFailed++;
+    console.error(`Thumbnail export failed for ID=${id}: ${e.message}`);
+  }
 
-    failed++;
-    console.error(`Cover image export failed for ID=${id}: ${e.message}`);
+  // Cover image (detail hero)
+  try {
+    const relCover = downloadKind({ id, folder, kind: "cover" });
+    it.CoverImage = relCover;
+    it.Images = [relCover]; // keep old consumers working
+    coverDownloaded++;
+  } catch (e) {
+    // Cleanup partials
+    try {
+      const tmp = path.join(folder, "cover.tmp");
+      if (fs.existsSync(tmp)) fs.unlinkSync(tmp);
+    } catch {}
+    try {
+      const hf = path.join(folder, "headers.cover.txt");
+      if (fs.existsSync(hf)) fs.unlinkSync(hf);
+    } catch {}
+
+    it.CoverImage = null;
+    it.Images = [];
+    coverFailed++;
+    console.error(`Cover export failed for ID=${id}: ${e.message}`);
   }
 }
 
@@ -187,5 +230,5 @@ fs.writeFileSync(outJsonPath, JSON.stringify(items, null, 2));
 
 console.log(`Wrote ${outJsonPath} (${items.length} items)`);
 console.log(
-  `Images: downloaded=${downloaded}, skipped(no attachments)=${skipped}, failed=${failed}`
+  `Images: thumbnail downloaded=${thumbDownloaded}, thumbnail failed=${thumbFailed}, cover downloaded=${coverDownloaded}, cover failed=${coverFailed}, skipped(no attachments)=${skipped}`
 );

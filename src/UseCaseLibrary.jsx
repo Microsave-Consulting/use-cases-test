@@ -20,6 +20,27 @@ function splitValues(value) {
 }
 
 /* =======================
+   URL helpers
+   ======================= */
+
+function toAbsAssetUrl(maybeRelativeUrl) {
+  if (!maybeRelativeUrl) return null;
+
+  const s = String(maybeRelativeUrl).trim();
+  if (!s) return null;
+
+  // Already absolute (SharePoint / Azure / CDN)
+  if (/^https?:\/\//i.test(s)) return s;
+
+  // Support data: urls (rare but safe)
+  if (/^data:/i.test(s)) return s;
+
+  // Otherwise treat as GH Pages/Vite asset under BASE_URL
+  const base = import.meta.env.BASE_URL || "/";
+  return base.replace(/\/$/, "") + "/" + s.replace(/^\//, "");
+}
+
+/* =======================
    Population helpers
    ======================= */
 
@@ -75,13 +96,8 @@ function formatPopulation(pop) {
 function normalizeCountryLabelForMatch(label) {
   if (!label) return "";
   let s = String(label).trim().toLowerCase();
-
-  // Remove most punctuation
   s = s.replace(/[^a-z0-9\s]/g, " ");
-
-  // Collapse multiple spaces
   s = s.replace(/\s+/g, " ").trim();
-
   return s;
 }
 
@@ -160,9 +176,7 @@ function FilterBubble({ id, label, options, selectedValues, onChange, primary })
             return (
               <div
                 key={value}
-                className={
-                  "ucl-filter-option " + (active ? "ucl-filter-option-active" : "")
-                }
+                className={"ucl-filter-option " + (active ? "ucl-filter-option-active" : "")}
                 onClick={() => toggleValue(value)}
               >
                 <span className="ucl-filter-checkbox">{active ? "✓" : ""}</span>
@@ -179,6 +193,27 @@ function FilterBubble({ id, label, options, selectedValues, onChange, primary })
 /* =======================
    Card component
    ======================= */
+
+function pickCardImageUrl(uc) {
+  // NEW: Thumbnail is the card image source
+  const thumb =
+    uc?.ThumbnailUrl ||
+    uc?.Thumbnail ||
+    null;
+
+  // NEW: if no thumbnail, fall back to cover
+  const cover =
+    uc?.CoverImageUrl ||
+    uc?.CoverImage ||
+    null;
+
+  // Legacy fallback (older local JSONs)
+  const legacy =
+    Array.isArray(uc?.Images) ? uc.Images[0] : null;
+
+  const chosen = thumb || cover || legacy || null;
+  return toAbsAssetUrl(chosen);
+}
 
 function UseCaseCard({ uc, onOpen }) {
   const sectors = splitValues(uc.Sectors);
@@ -205,12 +240,7 @@ function UseCaseCard({ uc, onOpen }) {
     ? `Population (approx): ${formatPopulation(population)}`
     : null;
 
-  // ✅ Cover image (blank space if missing)
-  const coverRel = uc.CoverImage || (Array.isArray(uc.Images) ? uc.Images[0] : null);
-
-  const coverSrc = coverRel
-    ? import.meta.env.BASE_URL + String(coverRel).replace(/^\//, "")
-    : null;
+  const imageSrc = pickCardImageUrl(uc);
 
   // Keep card image dimensions constant
   const IMAGE_HEIGHT = 150;
@@ -246,10 +276,10 @@ function UseCaseCard({ uc, onOpen }) {
           marginBottom: "0.75rem",
         }}
       >
-        {coverSrc ? (
+        {imageSrc ? (
           <img
-            src={coverSrc}
-            alt={uc.Title ? `${uc.Title} cover` : "Use case cover"}
+            src={imageSrc}
+            alt={uc.Title ? `${uc.Title} thumbnail` : "Use case thumbnail"}
             loading="lazy"
             style={{
               width: "100%",
@@ -318,10 +348,7 @@ export default function UseCaseLibrary() {
         setLoading(true);
         setError(null);
 
-        const [casesRes, configRes] = await Promise.all([
-          fetch(CASES_URL),
-          fetch(CONFIG_URL),
-        ]);
+        const [casesRes, configRes] = await Promise.all([fetch(CASES_URL), fetch(CONFIG_URL)]);
 
         if (!casesRes.ok) throw new Error(`Cases HTTP ${casesRes.status}`);
         if (!configRes.ok) throw new Error(`Config HTTP ${configRes.status}`);
@@ -386,14 +413,12 @@ export default function UseCaseLibrary() {
 
     const final = {};
     Object.keys(map).forEach((id) => {
-      final[id] = Array.from(map[id]).sort((a, b) =>
-        String(a).localeCompare(String(b))
-      );
+      final[id] = Array.from(map[id]).sort((a, b) => String(a).localeCompare(String(b)));
     });
     return final;
   }, [useCases, filterConfig]);
 
-  // 🔑 Apply / re-apply country filter whenever ?country=<name> changes
+  // Apply / re-apply country filter whenever ?country=<name> changes
   useEffect(() => {
     if (!filterConfig.length) return;
 
@@ -409,9 +434,7 @@ export default function UseCaseLibrary() {
     const targetNorm = normalizeCountryLabelForMatch(countryParam);
 
     const match =
-      optionsForCountry.find(
-        (opt) => normalizeCountryLabelForMatch(opt) === targetNorm
-      ) || null;
+      optionsForCountry.find((opt) => normalizeCountryLabelForMatch(opt) === targetNorm) || null;
 
     if (!match) return;
 
@@ -422,7 +445,7 @@ export default function UseCaseLibrary() {
     });
   }, [filterConfig, filterOptions, searchParams]);
 
-  // 🔑 Apply / re-apply sector filter whenever ?sector=<name>[,<name2>...] changes
+  // Apply / re-apply sector filter whenever ?sector=<name>[,<name2>...] changes
   useEffect(() => {
     if (!filterConfig.length) return;
 
@@ -440,10 +463,7 @@ export default function UseCaseLibrary() {
     const matches = wanted
       .map((w) => {
         const wNorm = normalizeLabelForMatch(w);
-        return (
-          optionsForSector.find((opt) => normalizeLabelForMatch(opt) === wNorm) ||
-          null
-        );
+        return optionsForSector.find((opt) => normalizeLabelForMatch(opt) === wNorm) || null;
       })
       .filter(Boolean);
 
@@ -451,16 +471,13 @@ export default function UseCaseLibrary() {
 
     setFilters((prev) => {
       const current = prev[sectorFilter.id] || [];
-      const same =
-        current.length === matches.length && current.every((v) => matches.includes(v));
-
+      const same = current.length === matches.length && current.every((v) => matches.includes(v));
       if (same) return prev;
-
       return { ...prev, [sectorFilter.id]: matches };
     });
   }, [filterConfig, filterOptions, searchParams]);
 
-  // 🔑 Apply / re-apply maturity filter whenever ?maturity=<value> changes
+  // Apply / re-apply maturity filter whenever ?maturity=<value> changes
   useEffect(() => {
     if (!filterConfig.length) return;
 
@@ -476,8 +493,7 @@ export default function UseCaseLibrary() {
     const targetNorm = normalizeLabelForMatch(maturityParam);
 
     const match =
-      optionsForMaturity.find((opt) => normalizeLabelForMatch(opt) === targetNorm) ||
-      null;
+      optionsForMaturity.find((opt) => normalizeLabelForMatch(opt) === targetNorm) || null;
 
     if (!match) return;
 
@@ -489,10 +505,7 @@ export default function UseCaseLibrary() {
   }, [filterConfig, filterOptions, searchParams]);
 
   const updateFilter = (id, values) => {
-    setFilters((prev) => ({
-      ...prev,
-      [id]: values,
-    }));
+    setFilters((prev) => ({ ...prev, [id]: values }));
   };
 
   const clearAll = () => {
@@ -504,7 +517,7 @@ export default function UseCaseLibrary() {
     setSearch("");
   };
 
-  // ✅ Navigate to detail page
+  // Navigate to detail page
   const openUseCase = (uc) => {
     const caseId = uc?.ID ?? uc?.Id;
     if (!caseId) return;
@@ -570,9 +583,7 @@ export default function UseCaseLibrary() {
       <header className="ucl-header">
         <div>
           <h1 className="ucl-title">Explore Digital ID use cases</h1>
-          <p className="ucl-subtitle">
-            Search, filter, and browse real-world digital ID use cases.
-          </p>
+          <p className="ucl-subtitle">Search, filter, and browse real-world digital ID use cases.</p>
         </div>
       </header>
 

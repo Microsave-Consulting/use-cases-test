@@ -13,20 +13,28 @@ function splitValues(value) {
     .filter(Boolean);
 }
 
-function getHeroImage(u) {
-  // Prefer explicit cover image, otherwise first in Images array
-  return u?.CoverImage || (Array.isArray(u?.Images) ? u.Images[0] : null) || null;
-}
-
 function toAbsAssetUrl(maybeRelativeUrl) {
   if (!maybeRelativeUrl) return null;
+
+  const s = String(maybeRelativeUrl).trim();
+  if (!s) return null;
+
   // If already absolute, keep it
-  if (/^https?:\/\//i.test(maybeRelativeUrl)) return maybeRelativeUrl;
+  if (/^https?:\/\//i.test(s)) return s;
+
+  // Allow data URLs
+  if (/^data:/i.test(s)) return s;
+
   // Ensure it works on GitHub Pages with BASE_URL
   const base = import.meta.env.BASE_URL || "/";
-  return (
-    base.replace(/\/$/, "") + "/" + String(maybeRelativeUrl).replace(/^\//, "")
-  );
+  return base.replace(/\/$/, "") + "/" + s.replace(/^\//, "");
+}
+
+function getHeroImage(u) {
+  // NEW: Prefer CoverImage (or CoverImageUrl if your API enriches), then legacy Images[0]
+  const cover = u?.CoverImageUrl || u?.CoverImage || null;
+  const legacy = Array.isArray(u?.Images) ? u.Images[0] : null;
+  return cover || legacy || null;
 }
 
 export default function UseCaseDetail() {
