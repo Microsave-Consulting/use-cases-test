@@ -1,14 +1,19 @@
 // scripts/export_images_and_json.cjs
 // Purpose:
 // 1) Read SharePoint-exported raw JSON (public/data/use_cases.raw.json)
-// 2) For items with attachments, download:
-//    a) Thumbnail via Azure Function (?kind=thumbnail)
-//    b) Cover via Azure Function (?kind=cover)
+// 2) Download:
+//    a) Thumbnail via Azure Function (?kind=thumbnail)  [STRICT]
+//    b) Cover via Azure Function (?kind=cover)          [STRICT]
 // 3) Save as thumbnail.<ext> and cover.<ext> based on response headers
 // 4) Write normalized JSON (public/data/use_cases.json) with:
 //    - Thumbnail (relative path)
 //    - CoverImage (relative path)
 //    - Images = [CoverImage] (back-compat)
+//
+// IMPORTANT changes vs earlier version:
+// - No gating on it.Attachments (image columns are not necessarily attachments)
+// - curl uses -f so 404/500 fails the download step and we do not write junk files
+// - Always cleans stale cover/thumbnail files before attempting downloads
 
 const fs = require("fs");
 const path = require("path");
@@ -86,7 +91,7 @@ function isSupportedImageExt(ext = "") {
 }
 
 function cleanOldImages(folder) {
-  // Remove any stale cover.* / thumbnail.* and temp/header artifacts
+  // Remove stale cover.* / thumbnail.* and temp/header artifacts
   const files = fs.existsSync(folder) ? fs.readdirSync(folder) : [];
   for (const f of files) {
     if (/^(cover|thumbnail)\.(png|jpe?g|webp|gif|tmp)$/i.test(f)) {
@@ -114,11 +119,11 @@ function downloadKind({ id, folder, kind }) {
   const headerFile = path.join(folder, `headers.${kind}.txt`);
   const url = buildImageUrl(id, kind);
 
-  // Download body + headers
-  // -sSL: silent + follow redirects
-  // -D: write headers to file
-  // -o: write body to tmp file
-  execFileSync("curl", ["-sSL", "-D", headerFile, url, "-o", tmpFile], {
+  // IMPORTANT:
+  // -f  => fail on HTTP errors (e.g., 404) so we don't save HTML as an "image"
+  // -sS => silent but still show errors
+  // -L  => follow redirects
+  execFileSync("curl", ["-f", "-sS", "-L", "-D", headerFile, url, "-o", tmpFile], {
     stdio: "inherit",
   });
 
@@ -153,27 +158,27 @@ function downloadKind({ id, folder, kind }) {
   return rel;
 }
 
-let skipped = 0;
+let skippedMissingId = 0;
 
 let coverDownloaded = 0;
+let coverMissing = 0; // 404 from strict API
 let coverFailed = 0;
 
 let thumbDownloaded = 0;
+let thumbMissing = 0; // 404 from strict API
 let thumbFailed = 0;
 
 for (const it of items) {
   const id = it.ID ?? it.Id ?? it.id;
-  if (!id) continue;
+  if (!id) {
+    skippedMissingId++;
+    continue;
+  }
 
-  // Default outputs
+  // Default outputs each run (prevents stale JSON fields)
   it.Thumbnail = null;
   it.CoverImage = null;
   it.Images = [];
-
-  if (!it.Attachments) {
-    skipped++;
-    continue;
-  }
 
   const folder = path.join(imagesRoot, String(id));
   fs.mkdirSync(folder, { recursive: true });
@@ -181,12 +186,21 @@ for (const it of items) {
   // Remove stale files from prior runs
   cleanOldImages(folder);
 
-  // Thumbnail first (library card)
+  // Thumbnail (library card)
   try {
     const relThumb = downloadKind({ id, folder, kind: "thumbnail" });
     it.Thumbnail = relThumb;
     thumbDownloaded++;
   } catch (e) {
+    // Treat strict 404 as "missing" not "failed"
+    const msg = String(e?.message || "");
+    if (msg.toLowerCase().includes("curl") && msg.includes("(22)")) {
+      // curl returns exit code 22 for HTTP errors when -f is used
+      thumbMissing++;
+    } else {
+      thumbFailed++;
+    }
+
     // Cleanup partials
     try {
       const tmp = path.join(folder, "thumbnail.tmp");
@@ -198,17 +212,22 @@ for (const it of items) {
     } catch {}
 
     it.Thumbnail = null;
-    thumbFailed++;
-    console.error(`Thumbnail export failed for ID=${id}: ${e.message}`);
   }
 
-  // Cover image (detail hero)
+  // Cover (detail hero)
   try {
     const relCover = downloadKind({ id, folder, kind: "cover" });
     it.CoverImage = relCover;
-    it.Images = [relCover]; // keep old consumers working
+    it.Images = [relCover]; // back-compat for older consumers
     coverDownloaded++;
   } catch (e) {
+    const msg = String(e?.message || "");
+    if (msg.toLowerCase().includes("curl") && msg.includes("(22)")) {
+      coverMissing++;
+    } else {
+      coverFailed++;
+    }
+
     // Cleanup partials
     try {
       const tmp = path.join(folder, "cover.tmp");
@@ -221,8 +240,6 @@ for (const it of items) {
 
     it.CoverImage = null;
     it.Images = [];
-    coverFailed++;
-    console.error(`Cover export failed for ID=${id}: ${e.message}`);
   }
 }
 
@@ -230,5 +247,9 @@ fs.writeFileSync(outJsonPath, JSON.stringify(items, null, 2));
 
 console.log(`Wrote ${outJsonPath} (${items.length} items)`);
 console.log(
-  `Images: thumbnail downloaded=${thumbDownloaded}, thumbnail failed=${thumbFailed}, cover downloaded=${coverDownloaded}, cover failed=${coverFailed}, skipped(no attachments)=${skipped}`
+  [
+    `Thumbnail: downloaded=${thumbDownloaded}, missing(404)=${thumbMissing}, failed=${thumbFailed}`,
+    `Cover: downloaded=${coverDownloaded}, missing(404)=${coverMissing}, failed=${coverFailed}`,
+    `Skipped: missing ID=${skippedMissingId}`,
+  ].join(" | ")
 );
