@@ -146,15 +146,21 @@ body {
   border: none;
   cursor: pointer;
 
-  /* critical resets to match <a> styling */
-  font: inherit;
-  color: inherit;
+  /* 🔑 hard reset to match <a> exactly */
+  font-family: inherit;
+  font-size: inherit;
+  font-weight: 500;          /* match .app-nav-link */
+  line-height: normal;
+  color: var(--muted);
+
+  appearance: none;
+  -webkit-appearance: none;
 
   display: inline-flex;
   align-items: center;
   gap: 6px;
 
-  padding: 0; /* match .app-nav-link */
+  padding: 0;
 }
 
 /* Caret */
