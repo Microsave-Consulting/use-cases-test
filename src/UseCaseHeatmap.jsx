@@ -70,7 +70,16 @@ export default function UseCaseHeatmap({ items }) {
 
     const uniqueValues = Array.from(new Set(values)).sort((a, b) => a - b);
 
-    const palette = ["#fff7cc", "#ffef99", "#ffe066", "#ffd033", "#facc15", "#eab308", "#ca8a04", "#a16207"];
+    const palette = [
+      "#fff7cc",
+      "#ffef99",
+      "#ffe066",
+      "#ffd033",
+      "#facc15",
+      "#eab308",
+      "#ca8a04",
+      "#a16207",
+    ];
     const n = uniqueValues.length;
     const colorMap = {};
 
@@ -106,6 +115,14 @@ export default function UseCaseHeatmap({ items }) {
   const MAP_W = 1000;
   const MAP_H = 450;
 
+  // ✅ Flat, rectangular projection
+  const PROJECTION = "geoEquirectangular";
+
+  // Tuned for your 1000x450 canvas:
+  // - Equirectangular is flatter but needs a different scale than EqualEarth
+  // - Center keeps the world balanced
+  const PROJ_CFG = { scale: 155, center: [0, 10] };
+
   return (
     <div style={{ width: "100%", padding: "1rem" }}>
       <div
@@ -118,7 +135,8 @@ export default function UseCaseHeatmap({ items }) {
         }}
       >
         <ComposableMap
-          projectionConfig={{ scale: 155, center: [-10, 10] }}
+          projection={PROJECTION}
+          projectionConfig={PROJ_CFG}
           width={MAP_W}
           height={MAP_H}
           style={{
@@ -144,9 +162,15 @@ export default function UseCaseHeatmap({ items }) {
           <rect x="0" y="0" width={MAP_W} height={MAP_H} fill="url(#oceanGradient)" />
 
           <text x={70} y={260} fontSize={28} fontWeight={700} fill="#fff">
-            <tspan x={70} dy="0">Digital ID</tspan>
-            <tspan x={70} dy="34">Innovations</tspan>
-            <tspan x={70} dy="34">Library</tspan>
+            <tspan x={70} dy="0">
+              Digital ID
+            </tspan>
+            <tspan x={70} dy="34">
+              Innovations
+            </tspan>
+            <tspan x={70} dy="34">
+              Library
+            </tspan>
           </text>
 
           <Geographies geography={geoUrl}>
@@ -164,7 +188,12 @@ export default function UseCaseHeatmap({ items }) {
                 if (!iso2) return;
 
                 const c = geoCentroid(geo);
-                if (Array.isArray(c) && !Number.isNaN(c[0]) && !Number.isNaN(c[1]) && !centroidByIso[iso2]) {
+                if (
+                  Array.isArray(c) &&
+                  !Number.isNaN(c[0]) &&
+                  !Number.isNaN(c[1]) &&
+                  !centroidByIso[iso2]
+                ) {
                   centroidByIso[iso2] = { centroid: c, geoName };
                 }
               });
@@ -228,10 +257,14 @@ export default function UseCaseHeatmap({ items }) {
                     );
                   })}
 
-                  {/* Flag pins ONLY on hover (your requirement) */}
+                  {/* Flag pins ONLY on hover */}
                   {hoverInfo && hoverCentroid && (
                     <Marker coordinates={hoverCentroid}>
-                      <g transform="translate(0, -30)" onClick={() => goToCountry(hoverInfo)} style={{ cursor: "pointer" }}>
+                      <g
+                        transform="translate(0, -30)"
+                        onClick={() => goToCountry(hoverInfo)}
+                        style={{ cursor: "pointer" }}
+                      >
                         <line x1="0" y1="11" x2="0" y2="26" stroke="#facc15" strokeWidth="2" />
                         <polygon points="-4,26 4,26 0,32" fill="#facc15" />
                         <circle r="15" fill="rgba(250,204,21,0.25)" />
@@ -272,7 +305,8 @@ export default function UseCaseHeatmap({ items }) {
               whiteSpace: "nowrap",
             }}
           >
-            <strong>{hoverInfo.label}</strong> • {hoverInfo.value} use case{hoverInfo.value === 1 ? "" : "s"}
+            <strong>{hoverInfo.label}</strong> • {hoverInfo.value} use case
+            {hoverInfo.value === 1 ? "" : "s"}
           </div>
         )}
 
