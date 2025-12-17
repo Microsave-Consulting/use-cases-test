@@ -45,6 +45,9 @@ function Shell() {
                 type="button"
               >
                 🚀 <span>Hackathons</span>
+                <span className="app-nav-caret" aria-hidden="true">
+                  ▾
+                </span>
               </button>
 
               <div className="app-nav-dropdown-menu">
@@ -73,10 +76,7 @@ function Shell() {
 
       {/* Home = full-bleed; others = contained */}
       <main
-        className={
-          "app-main " +
-          (isHome ? "app-main-full" : "app-main-contained")
-        }
+        className={"app-main " + (isHome ? "app-main-full" : "app-main-contained")}
       >
         <Routes>
           <Route path="/" element={<MapPage />} />

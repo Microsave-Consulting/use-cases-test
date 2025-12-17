@@ -131,18 +131,38 @@ body {
   padding: 0 var(--page-pad-x);
 }
 
+/* =======================
+   Hackathons dropdown
+   ======================= */
+
 /* Dropdown container */
 .app-nav-dropdown {
   position: relative;
 }
 
-/* Toggle behaves like other nav links */
+/* Toggle behaves exactly like other nav links (and matches sizing) */
 .app-nav-dropdown-toggle {
   background: none;
   border: none;
   cursor: pointer;
+
+  /* critical resets to match <a> styling */
   font: inherit;
   color: inherit;
+
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+
+  padding: 0; /* match .app-nav-link */
+}
+
+/* Caret */
+.app-nav-caret {
+  font-size: 0.7em;
+  line-height: 1;
+  margin-left: 0.15rem;
+  opacity: 0.75;
 }
 
 /* Dropdown menu */
@@ -164,6 +184,14 @@ body {
 .app-nav-dropdown:hover .app-nav-dropdown-menu,
 .app-nav-dropdown:focus-within .app-nav-dropdown-menu {
   display: block;
+}
+
+/* Make the toggle “feel active” when menu is open */
+.app-nav-dropdown:hover > .app-nav-dropdown-toggle,
+.app-nav-dropdown:focus-within > .app-nav-dropdown-toggle {
+  color: var(--text);
+  text-decoration: underline;
+  text-underline-offset: 3px;
 }
 
 /* Dropdown items */
