@@ -108,7 +108,6 @@ export default function UseCaseDetail() {
   const assurance = useCase.AssuranceLevels || "—";
 
   const regionText = `${region}${subregion ? `; ${subregion}` : ""}`;
-
   const keyTerms = splitValues(useCase.KeyTerms);
 
   return (
@@ -125,11 +124,20 @@ export default function UseCaseDetail() {
         <div className="ucd-hero-card">
           <div className="ucd-hero-media">
             {heroImg ? (
-              /* ✅ FIXED: decorative image properly marked */
-              <img className="ucd-hero-img" src={heroImg} alt="" aria-hidden="true" />
+              /* ✅ Decorative image properly marked */
+              <img
+                className="ucd-hero-img"
+                src={heroImg}
+                alt=""
+                aria-hidden="true"
+                loading="eager"
+                decoding="async"
+                fetchpriority="high"
+              />
             ) : (
               <div className="ucd-hero-img ucd-hero-fallback" />
             )}
+
             <div className="ucd-hero-overlay" />
             <h1 className="ucd-hero-title">{title}</h1>
           </div>

@@ -2,6 +2,18 @@
    Use Case Detail (UCD)
    ======================= */
 
+:root {
+  /* ✅ image standards (defensive) */
+  --ucd-cover-aspect: 16 / 9; /* keep 16:9 as the standard ratio */
+
+  /* ✅ size control (this is what fixes “too large”) */
+  --ucd-hero-max-h: 380px; /* adjust 340–420px to taste */
+}
+
+/* =======================
+   Page
+   ======================= */
+
 .ucd-page {
   max-width: 1200px;
   margin: 0 auto;
@@ -72,12 +84,26 @@
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
 }
 
+/* Base behavior (fallback): keeps your current contain/auto-height approach */
 .ucd-hero-media {
   position: relative;
   height: auto;
   background: #e9eef8; /* behind letterboxing */
 }
 
+/* ✅ Modern behavior: fixed ratio + capped height (prevents “too large”) */
+@supports (aspect-ratio: 16 / 9) {
+  .ucd-hero-media {
+    aspect-ratio: var(--ucd-cover-aspect);
+    width: 100%;
+    overflow: hidden;
+
+    /* ✅ key change: cap the hero height */
+    max-height: var(--ucd-hero-max-h);
+  }
+}
+
+/* Default/fallback image behavior */
 .ucd-hero-img {
   width: 100%;
   height: auto;
@@ -86,10 +112,27 @@
   max-height: 60vh;
 }
 
+/* ✅ When using fixed frame, fill it like a banner */
+@supports (aspect-ratio: 16 / 9) {
+  .ucd-hero-img {
+    height: 100%;
+    max-height: none;
+    object-fit: cover;
+    object-position: center;
+  }
+}
+
 /* Fallback block should still have a sensible height */
 .ucd-hero-fallback {
   background: linear-gradient(135deg, #e9eef8, #f7f7fb);
   height: clamp(220px, 35vh, 420px);
+}
+
+/* ✅ If we have a fixed hero frame, make fallback fill it */
+@supports (aspect-ratio: 16 / 9) {
+  .ucd-hero-fallback {
+    height: 100%;
+  }
 }
 
 /* Overlay should cover whatever height the media ends up being */
@@ -160,7 +203,7 @@
   line-height: 1.2;
 
   color: #24304a;
-  border: 1px solid rgba(0, 0, 0, 0.10);
+  border: 1px solid rgba(0, 0, 0, 0.1);
   box-shadow: 0 1px 0 rgba(0, 0, 0, 0.06);
 
   /* ✅ allow contents to shrink inside the grid cell */
@@ -271,7 +314,6 @@
 
 /* =======================
    Small screens
-   - ONE small tweak, not a pile of overrides
    ======================= */
 
 @media (max-width: 560px) {
@@ -279,6 +321,12 @@
     padding: 1rem 0.85rem 2.5rem;
   }
 
+  /* ✅ Smaller cap on mobile so the hero never dominates */
+  :root {
+    --ucd-hero-max-h: 260px;
+  }
+
+  /* ✅ keep your current behavior on very small screens for fallback browsers */
   .ucd-hero-img {
     max-height: 50vh;
   }

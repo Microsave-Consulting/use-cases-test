@@ -35,6 +35,38 @@ function Shell() {
             >
               📚 <span>Use Case Library</span>
             </NavLink>
+
+            {/* 🔽 Hackathons dropdown */}
+            <div className="app-nav-dropdown">
+              <button
+                className="app-nav-link app-nav-dropdown-toggle"
+                aria-haspopup="true"
+                aria-expanded="false"
+                type="button"
+              >
+                🚀 <span>Hackathons</span>
+              </button>
+
+              <div className="app-nav-dropdown-menu">
+                <a
+                  href="https://www.africa.engineering.cmu.edu/research/upanzi/id-hackathon.html"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="app-nav-dropdown-item"
+                >
+                  Digital ID Hackathon Africa
+                </a>
+
+                <a
+                  href="https://digitalidinnovations.com/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="app-nav-dropdown-item"
+                >
+                  PNG National Digital ID Hackathon
+                </a>
+              </div>
+            </div>
           </nav>
         </div>
       </header>

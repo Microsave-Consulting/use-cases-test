@@ -254,6 +254,7 @@ function UseCaseCard({ uc, onOpen }) {
             src={imageSrc}
             alt={uc.Title ? `${uc.Title} thumbnail` : "Use case thumbnail"}
             loading="lazy"
+            decoding="async"
           />
         ) : (
           <div className="ucl-card-image-empty" aria-hidden="true" />

@@ -2,17 +2,34 @@
    USE CASE LIBRARY — PAGE SCOPE ONLY
    ========================================================= */
 
+/* ✅ NOTE:
+   This version guarantees a minimum left/right margin at laptop sizes
+   using width math (viewport - 2*gutter), not just max-width.
+*/
+
 :root {
-  /* easy knobs */
+  /* easy knobs (fallback height for older browsers / no aspect-ratio support) */
   --ucl-card-image-h: 150px;
+
+  /* ✅ image standards (defensive) */
+  --ucl-thumb-aspect: 4 / 3; /* standard thumbnail ratio */
+
+  /* ✅ UPDATED: visual cap so thumbnails don’t dominate cards */
+  --ucl-thumb-max-h: 140px; /* desktop/tablet cap; tweak 130–150px */
 }
 
 /* === Page wrapper === */
 
 .ucl-page {
-  max-width: 950px;
+  /* ✅ GUARANTEED gutters on each side */
+  --ucl-gutter: 64px;          /* min left/right margin on laptops */
+  --ucl-max-content: 820px;    /* your previous max-width intent */
+
+  width: min(var(--ucl-max-content), calc(100% - (2 * var(--ucl-gutter))));
   margin: 0 auto;
-  padding: 1.5rem 2.25rem 3rem;
+
+  /* ✅ keep vertical padding; gutters now provide the side spacing */
+  padding: 1.5rem 0 3rem;
 
   font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 }
@@ -72,7 +89,10 @@
   color: #fff;
   border-radius: 999px;
   padding: 0.4rem 0.75rem 0.4rem 1.1rem;
-  max-width: 780px;
+
+  /* ✅ slightly narrower so it matches the narrower page */
+  max-width: 720px;
+
   width: 100%;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.16);
 }
@@ -122,15 +142,20 @@
 /* Desktop default: 3 columns */
 .ucl-filters-wrapper {
   display: grid;
-  grid-template-columns: repeat(3, 230px);
-  gap: 0.6rem 1.25rem;
+
+  /* ✅ shrink fixed pill columns so 3-up fits in narrower page */
+  grid-template-columns: repeat(3, 205px);
+
+  gap: 0.6rem 1rem;
   justify-content: center;
   align-items: start;
 }
 
 .ucl-filter-bubble-wrapper {
   position: relative;
-  width: 230px;
+
+  /* ✅ match the column width above */
+  width: 205px;
 }
 
 /* Capsule base */
@@ -334,14 +359,20 @@
 
 .ucl-cards-grid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(240px, 1fr));
-  gap: 0.9rem;
+
+  /* ✅ still 3-up, but smaller cards */
+  grid-template-columns: repeat(3, minmax(210px, 1fr));
+
+  gap: 0.8rem;
 }
 
 .ucl-card {
   border-radius: 0.9rem;
   border: 1px solid #e2e6f0;
-  padding: 0.75rem 0.9rem 0.8rem;
+
+  /* ✅ slightly tighter so they feel right at smaller widths */
+  padding: 0.65rem 0.8rem 0.75rem;
+
   background: #fff;
   display: flex;
   flex-direction: column;
@@ -362,13 +393,25 @@
   outline-offset: 2px;
 }
 
-/* Card image area — moved from inline styles */
+/* =========================================================
+   CARD IMAGE (THUMBNAIL)
+   ========================================================= */
+
 .ucl-card-image {
   height: var(--ucl-card-image-h);
   border-radius: 14px;
   overflow: hidden;
   background: #fff;
   margin-bottom: 0.75rem;
+  width: 100%;
+}
+
+@supports (aspect-ratio: 4 / 3) {
+  .ucl-card-image {
+    height: auto;
+    aspect-ratio: var(--ucl-thumb-aspect);
+    max-height: var(--ucl-thumb-max-h);
+  }
 }
 
 .ucl-card-image-img {
@@ -376,6 +419,7 @@
   height: 100%;
   display: block;
   object-fit: cover;
+  object-position: center;
 }
 
 .ucl-card-image-empty {
@@ -452,8 +496,13 @@
    RESPONSIVE BREAKPOINTS
    ========================================================= */
 
-/* Tablet */
 @media (max-width: 900px) {
+  /* ✅ reduce guaranteed gutter */
+  .ucl-page {
+    --ucl-gutter: 32px;
+    --ucl-max-content: 950px; /* allow content to use space as needed */
+  }
+
   .ucl-filters-wrapper {
     grid-template-columns: repeat(2, 230px);
   }
@@ -463,10 +512,13 @@
   }
 }
 
-/* Mobile */
 @media (max-width: 560px) {
+  /* ✅ smallest gutter */
   .ucl-page {
-    padding: 1.25rem 1rem 2.5rem;
+    --ucl-gutter: 16px;
+    --ucl-max-content: 100%;
+    width: calc(100% - (2 * var(--ucl-gutter)));
+    padding: 1.25rem 0 2.5rem;
   }
 
   .ucl-filters-wrapper {
@@ -484,5 +536,9 @@
 
   .ucl-title {
     font-size: 1.5rem;
+  }
+
+  :root {
+    --ucl-thumb-max-h: 115px;
   }
 }
