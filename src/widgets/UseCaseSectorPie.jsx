@@ -90,7 +90,7 @@ function makeDualLabelRenderer({ showLeaderLine = false, minPercentForLabels = 0
           fontSize={12}
           fontWeight={600}
         >
-          {(percent * 100).toFixed(1)}%
+          {Math.round(percent * 100)}%
         </text>
 
         <text
