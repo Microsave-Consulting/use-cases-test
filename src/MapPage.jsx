@@ -1,17 +1,25 @@
 // src/MapPage.jsx
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import UseCaseHeatmap from "./UseCaseHeatmap";
 import UseCaseSectorPie from "./widgets/UseCaseSectorPie";
-import SectorMaturityHeatmap from "./widgets/SectorMaturityHeatmap";
-import SectorCountryHeatmap from "./widgets/SectorCountryHeatmap";
 import "./MapPage.css";
 
 const API_URL = import.meta.env.BASE_URL + "data/use_cases.json";
+
+function splitValues(value) {
+  if (!value) return [];
+  return String(value)
+    .split(",")
+    .map((v) => v.trim())
+    .filter(Boolean);
+}
 
 export default function MapPage() {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     async function load() {
@@ -30,6 +38,62 @@ export default function MapPage() {
     load();
   }, []);
 
+  const stats = useMemo(() => {
+    const sectorSet = new Set();
+    const countrySet = new Set();
+
+    for (const it of items) {
+      const sectorsRaw = it?.Sectors ?? it?.sectors ?? it?.Sector ?? it?.sector;
+      const sectors = Array.isArray(sectorsRaw) ? sectorsRaw : splitValues(sectorsRaw);
+      sectors
+        .map((s) => String(s).trim())
+        .filter(Boolean)
+        .forEach((s) => sectorSet.add(s));
+
+      const countryRaw =
+        it?.countries ??
+        it?.Countries ??
+        it?.country ??
+        it?.Country ??
+        it?.country_covered ??
+        it?.countryCovered ??
+        it?.country_name;
+
+      const countries = Array.isArray(countryRaw) ? countryRaw : splitValues(countryRaw);
+      countries
+        .map((c) => String(c).trim())
+        .filter(Boolean)
+        .forEach((c) => countrySet.add(c));
+    }
+
+    return { sectors: sectorSet.size, useCases: items.length, countries: countrySet.size };
+  }, [items]);
+
+  // Top 3 sectors by number of use cases
+  const topSectors = useMemo(() => {
+    const counts = new Map();
+
+    for (const it of items) {
+      const sectorsRaw = it?.Sectors ?? it?.sectors ?? it?.Sector ?? it?.sector;
+      const sectors = Array.isArray(sectorsRaw) ? sectorsRaw : splitValues(sectorsRaw);
+
+      // Count each sector once per use case
+      const unique = new Set(sectors.map((s) => String(s).trim()).filter(Boolean));
+      for (const s of unique) counts.set(s, (counts.get(s) || 0) + 1);
+    }
+
+    return [...counts.entries()]
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 3)
+      .map(([name, useCases]) => ({ name, useCases }));
+  }, [items]);
+
+  function goToSector(sectorName) {
+    const q = new URLSearchParams();
+    q.set("sector", sectorName);
+    navigate(`/library?${q.toString()}`);
+  }
+
   if (loading) return <div className="map-page-status">Loading…</div>;
   if (error) return <div className="map-page-status">Error: {error}</div>;
 
@@ -40,33 +104,74 @@ export default function MapPage() {
         <UseCaseHeatmap items={items} />
       </section>
 
-      {/* 3x2 grid */}
+      {/* Stats ribbon */}
+      <section className="map-ribbon" aria-label="Summary statistics">
+        <div className="map-ribbon-inner">
+          <span>
+            <strong>Number of sectors:</strong> {stats.sectors}
+          </span>
+          <span className="map-ribbon-sep">•</span>
+          <span>
+            <strong>Total number of use cases:</strong> {stats.useCases}
+          </span>
+          <span className="map-ribbon-sep">•</span>
+          <span>
+            <strong>Countries covered:</strong> {stats.countries}
+          </span>
+        </div>
+      </section>
+
+      {/* Row 1 (2 columns) + Top Sectors */}
       <section className="map-grid-3x2">
-        {/* Row 1 */}
-        <div className="map-cell map-placeholder">
-          <div className="map-placeholder-text">Content goes here (1)</div>
-        </div>
-
+        {/* Col 1: Intro */}
         <div className="map-cell">
-          <SectorCountryHeatmap items={items} topNCountries={10} />
+          <div className="map-intro">
+            <h1 className="map-intro-title">
+              Explore Sectoral Digital ID Use Cases across Countries of the World
+            </h1>
+
+            <p className="map-intro-body">
+              This section directs you to a centralized repository of extensive use cases, providing
+              an opportunity to explore and learn about various active and planned use cases built
+              on national digital identity systems. This digital library documents and curates
+              digital ID applications across geographies and sectors. Its objectives are to provide
+              a reliable global public good that expands knowledge of digital ID applications,
+              foster evidence-based decision-making, facilitate cross-regional knowledge exchange,
+              and scale the adoption of practical digital ID innovations worldwide by systematically
+              capturing learnings from hackathons and broader ecosystem initiatives.
+            </p>
+          </div>
         </div>
 
-        {/* Row 2 */}
+        {/* Col 2: Pie chart */}
         <div className="map-cell">
           <UseCaseSectorPie items={items} />
         </div>
 
-        <div className="map-cell map-placeholder">
-          <div className="map-placeholder-text">Content goes here (2)</div>
-        </div>
+        {/* Full-width: Top sectors cards */}
+        <div className="map-cell map-top-sectors">
+          <div className="map-top-sectors-head">
+            <h2 className="map-top-sectors-title">Top Sectors</h2>
+          </div>
 
-        {/* Row 3 */}
-        <div className="map-cell map-placeholder">
-          <div className="map-placeholder-text">Content goes here (3)</div>
-        </div>
-
-        <div className="map-cell">
-          <SectorMaturityHeatmap items={items} />
+          <div className="map-top-sectors-grid">
+            {topSectors.map((s) => (
+              <button
+                key={s.name}
+                type="button"
+                className="sector-card sector-card-button"
+                onClick={() => goToSector(s.name)}
+                aria-label={`View use cases in ${s.name}`}
+              >
+                <div className="sector-card-title">{s.name}</div>
+                <div className="sector-card-media" aria-hidden="true" />
+                <div className="sector-card-meta">
+                  <span className="sector-card-meta-label">Use cases:</span>{" "}
+                  <span className="sector-card-meta-value">{s.useCases}</span>
+                </div>
+              </button>
+            ))}
+          </div>
         </div>
       </section>
     </div>

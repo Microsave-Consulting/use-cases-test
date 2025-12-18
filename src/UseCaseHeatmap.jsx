@@ -310,9 +310,9 @@ export default function UseCaseHeatmap({ items }) {
           </div>
         )}
 
-        <div style={{ marginTop: "0.75rem", fontSize: "0.8rem", color: "#64748b", textAlign: "right" }}>
-          Min: {minValue || 0} • Max: {maxValue || 0}
-        </div>
+        {/* <div style={{ marginTop: "0.75rem", fontSize: "0.8rem", color: "#64748b", textAlign: "right" }}> */}
+          {/* Min: {minValue || 0} • Max: {maxValue || 0} */}
+        {/* </div> */}
       </div>
     </div>
   );

@@ -3,6 +3,7 @@ import { HashRouter, Routes, Route, NavLink, useLocation } from "react-router-do
 import MapPage from "./MapPage";
 import UseCaseLibrary from "./UseCaseLibrary";
 import UseCaseDetail from "./UseCaseDetail";
+import logo from "./assets/msc-logo.svg"; // ✅ added
 import "./App.css";
 
 /**
@@ -18,65 +19,78 @@ function Shell() {
       <header className="app-header">
         <div className="app-container">
           <nav className="app-nav" aria-label="Primary">
-            <NavLink
-              to="/"
-              className={({ isActive }) =>
-                "app-nav-link" + (isActive ? " is-active" : "")
-              }
-            >
-              🏠 <span>Home</span>
+            {/* LEFT: Logo */}
+            <NavLink to="/" className="app-brand" aria-label="MSC Home">
+              <img src={logo} alt="MSC" className="app-logo" />
             </NavLink>
 
-            <NavLink
-              to="/library"
-              className={({ isActive }) =>
-                "app-nav-link" + (isActive ? " is-active" : "")
-              }
-            >
-              📚 <span>Use Case Library</span>
-            </NavLink>
-
-            {/* 🔽 Hackathons dropdown */}
-            <div className="app-nav-dropdown">
-              <button
-                className="app-nav-link app-nav-dropdown-toggle"
-                aria-haspopup="true"
-                aria-expanded="false"
-                type="button"
+            {/* CENTER: Links */}
+            <div className="app-nav-center">
+              <NavLink
+                to="/"
+                className={({ isActive }) =>
+                  "app-nav-link" + (isActive ? " is-active" : "")
+                }
               >
-                🚀 <span>Hackathons</span>
-                <span className="app-nav-caret" aria-hidden="true">
-                  ▾
-                </span>
-              </button>
+                Home
+              </NavLink>
 
-              <div className="app-nav-dropdown-menu">
-                <a
-                  href="https://www.africa.engineering.cmu.edu/research/upanzi/id-hackathon.html"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="app-nav-dropdown-item"
+              {/* Hackathons dropdown */}
+              <div className="app-nav-dropdown">
+                <button
+                  className="app-nav-link app-nav-dropdown-toggle"
+                  aria-haspopup="true"
+                  aria-expanded="false"
+                  type="button"
                 >
-                  Digital ID Hackathon Africa
-                </a>
+                  Hackathons
+                  <span className="app-nav-caret" aria-hidden="true">
+                    ▾
+                  </span>
+                </button>
 
-                <a
-                  href="https://digitalidinnovations.com/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="app-nav-dropdown-item"
-                >
-                  PNG National Digital ID Hackathon
-                </a>
+                <div className="app-nav-dropdown-menu">
+                  <a
+                    href="https://www.africa.engineering.cmu.edu/research/upanzi/id-hackathon.html"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="app-nav-dropdown-item"
+                  >
+                    Digital ID Hackathon Africa
+                  </a>
+
+                  <a
+                    href="https://digitalidinnovations.com/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="app-nav-dropdown-item"
+                  >
+                    PNG National Digital ID Hackathon
+                  </a>
+                </div>
               </div>
+
+              <NavLink
+                to="/library"
+                className={({ isActive }) =>
+                  "app-nav-link" + (isActive ? " is-active" : "")
+                }
+              >
+                Use Case Library
+              </NavLink>
             </div>
+
+            {/* RIGHT: Blank space (intentionally empty) */}
+            <div className="app-nav-right" aria-hidden="true" />
           </nav>
         </div>
       </header>
 
       {/* Home = full-bleed; others = contained */}
       <main
-        className={"app-main " + (isHome ? "app-main-full" : "app-main-contained")}
+        className={
+          "app-main " + (isHome ? "app-main-full" : "app-main-contained")
+        }
       >
         <Routes>
           <Route path="/" element={<MapPage />} />

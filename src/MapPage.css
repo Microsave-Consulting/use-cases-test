@@ -13,6 +13,32 @@
 }
 
 /* =========================
+   Light-blue stats ribbon
+   ========================= */
+
+.map-ribbon {
+  padding: 0 1rem 1rem;
+}
+
+.map-ribbon-inner {
+  background: #d9efff;
+  border-radius: 12px;
+  padding: 0.75rem 1rem;
+
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 0.75rem;
+  align-items: center;
+  justify-content: center;
+
+  color: #0b2b3a;
+}
+
+.map-ribbon-sep {
+  opacity: 0.6;
+}
+
+/* =========================
    3 rows × 2 columns grid
    ========================= */
 
@@ -33,7 +59,133 @@
   overflow: hidden;
 }
 
-/* Placeholder styling */
+/* =========================
+   Intro block (Content 1)
+   ========================= */
+
+.map-intro {
+  font-family: "Albert Sans", system-ui, -apple-system, BlinkMacSystemFont,
+    "Segoe UI", sans-serif;
+
+  padding: 8px 6px;
+  margin-left: 2rem;
+  max-width: 560px;
+}
+
+.map-intro-title {
+  margin: 0 0 18px;
+  font-size: clamp(32px, 3.2vw, 52px);
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  font-weight: 800;
+  color: #0b0b0b;
+}
+
+.map-intro-body {
+  margin: 0;
+  font-size: 18px;
+  line-height: 1.6;
+  font-weight: 400;
+  color: #2b2b2b;
+}
+
+/* =========================
+   Top sectors section
+   ========================= */
+
+.map-top-sectors {
+  grid-column: 1 / -1;
+
+  /* ✅ MORE margin on both sides */
+  padding: 0.25rem 2.5rem 0;
+
+  font-family: "Albert Sans", system-ui, -apple-system, BlinkMacSystemFont,
+    "Segoe UI", sans-serif;
+}
+
+.map-top-sectors-title {
+  margin: 0 0 0.75rem;
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: #0b0b0b;
+}
+
+.map-top-sectors-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1.25rem;
+}
+
+/* Clickable cards (used when you render <button>) */
+.sector-card-button {
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+  background: #fff;
+  border: 1px solid #e6e6e6;
+  border-radius: 14px;
+  padding: 1rem;
+  min-width: 0;
+  transition: box-shadow 150ms ease, transform 150ms ease;
+}
+
+.sector-card-button:hover {
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.08);
+  transform: translateY(-1px);
+}
+
+.sector-card-button:active {
+  transform: translateY(0);
+}
+
+.sector-card-button:focus-visible {
+  outline: 3px solid rgba(37, 99, 235, 0.35);
+  outline-offset: 3px;
+}
+
+/* Non-button version fallback (if you still render <div class="sector-card">) */
+.sector-card {
+  background: #fff;
+  border: 1px solid #e6e6e6;
+  border-radius: 14px;
+  padding: 1rem;
+  min-width: 0;
+  transition: box-shadow 150ms ease, transform 150ms ease;
+}
+
+.sector-card:hover {
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.08);
+  transform: translateY(-1px);
+}
+
+.sector-card-title {
+  font-weight: 800;
+  font-size: 1.05rem;
+  margin-bottom: 0.6rem;
+  color: #111;
+}
+
+.sector-card-media {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border-radius: 10px;
+  background: #f0f0f0;
+  margin-bottom: 0.65rem;
+}
+
+.sector-card-meta {
+  font-size: 0.95rem;
+  color: #222;
+}
+
+.sector-card-meta-label {
+  font-weight: 600;
+}
+
+/* =========================
+   Placeholder styling
+   ========================= */
+
 .map-placeholder {
   display: flex;
   align-items: center;
@@ -53,6 +205,24 @@
 
 @media (max-width: 900px) {
   .map-grid-3x2 {
+    grid-template-columns: 1fr;
+  }
+
+  .map-intro {
+    margin-left: 0;
+    max-width: 100%;
+    padding: 0;
+  }
+
+  .map-intro-body {
+    font-size: 16px;
+  }
+
+  .map-top-sectors {
+    padding: 0.25rem 1rem 0; /* slightly tighter on mobile */
+  }
+
+  .map-top-sectors-grid {
     grid-template-columns: 1fr;
   }
 }

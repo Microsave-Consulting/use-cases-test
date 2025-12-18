@@ -23,10 +23,13 @@ body {
 
   --border: #ddd;
   --text: #111;
-  --muted: #555;
+  --muted: #e6e9f0; /* light text for dark header */
   --bg: #fff;
 
-  --accent: #2563eb; /* blue for active tab */
+  --header-bg: #284181;
+  --header-text: #ffffff;
+
+  --accent: #93c5fd; /* lighter blue for active tab */
 
   --radius: 10px;
 }
@@ -55,55 +58,81 @@ body {
   padding: 0 var(--page-pad-x);
 }
 
+/* =======================
+   Header / Navigation
+   ======================= */
 .app-header {
-  border-bottom: 1px solid var(--border);
-  background: var(--bg);
+  background: var(--header-bg);
+}
+
+/* Three-column layout: left | center | right */
+.app-nav {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  height: 72px;
 }
 
 /* =======================
-   Navigation
+   Brand (left)
    ======================= */
-.app-nav {
-  display: flex;
-  gap: 16px;
+.app-brand {
+  display: inline-flex;
   align-items: center;
-  padding: 12px 0;
-  flex-wrap: wrap;
+  text-decoration: none;
 }
 
+.app-logo {
+  height: 34px;
+  width: auto;
+  display: block;
+}
+
+/* =======================
+   Center nav links
+   ======================= */
+.app-nav-center {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  gap: 32px;
+}
+
+/* Right column intentionally empty */
+.app-nav-right {
+  width: 34px; /* balances logo visually */
+}
+
+/* =======================
+   Nav links (shared)
+   ======================= */
 .app-nav-link {
   display: inline-flex;
   align-items: center;
   gap: 6px;
 
-  /* ❌ no box styling */
   padding: 0;
   border: none;
   background: none;
-  border-radius: 0;
 
   text-decoration: none;
   color: var(--muted);
   font-weight: 500;
 }
 
-/* Hover — subtle, no box */
+/* Hover — subtle underline */
 .app-nav-link:hover {
-  color: var(--text);
+  color: var(--header-text);
   text-decoration: underline;
-  text-underline-offset: 3px;
+  text-underline-offset: 4px;
 }
 
-/* Active — blue text only */
+/* Active — lighter blue, no box */
 .app-nav-link.is-active {
   color: var(--accent);
   font-weight: 600;
-
-  /* ensure no visual container */
-  background: none;
-  border: none;
-  box-shadow: none;
-  text-decoration: none;
+  text-decoration: underline;
+  text-underline-offset: 6px;
 }
 
 /* =======================
@@ -134,23 +163,19 @@ body {
 /* =======================
    Hackathons dropdown
    ======================= */
-
-/* Dropdown container */
 .app-nav-dropdown {
   position: relative;
 }
 
-/* Toggle behaves exactly like other nav links (and matches sizing) */
+/* Toggle matches nav links exactly */
 .app-nav-dropdown-toggle {
   background: none;
   border: none;
   cursor: pointer;
 
-  /* 🔑 hard reset to match <a> exactly */
   font-family: inherit;
   font-size: inherit;
-  font-weight: 500;          /* match .app-nav-link */
-  line-height: normal;
+  font-weight: 500;
   color: var(--muted);
 
   appearance: none;
@@ -159,7 +184,6 @@ body {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-
   padding: 0;
 }
 
@@ -175,29 +199,32 @@ body {
 .app-nav-dropdown-menu {
   position: absolute;
   top: 100%;
-  left: 0;
+  left: 50%;
+  transform: translateX(-50%);
   min-width: 260px;
+
   background: #fff;
   border: 1px solid var(--border);
   border-radius: var(--radius);
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
+
   padding: 0.25rem 0;
   display: none;
   z-index: 1000;
 }
 
-/* Show on hover or focus-within */
+/* Show on hover or focus */
 .app-nav-dropdown:hover .app-nav-dropdown-menu,
 .app-nav-dropdown:focus-within .app-nav-dropdown-menu {
   display: block;
 }
 
-/* Make the toggle “feel active” when menu is open */
+/* Toggle active feel */
 .app-nav-dropdown:hover > .app-nav-dropdown-toggle,
 .app-nav-dropdown:focus-within > .app-nav-dropdown-toggle {
-  color: var(--text);
+  color: var(--header-text);
   text-decoration: underline;
-  text-underline-offset: 3px;
+  text-underline-offset: 4px;
 }
 
 /* Dropdown items */
