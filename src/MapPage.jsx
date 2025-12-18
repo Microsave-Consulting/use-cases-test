@@ -173,6 +173,24 @@ export default function MapPage() {
             ))}
           </div>
         </div>
+
+        {/* Full-width: Explore Hackathons section (below cards) */}
+        <div className="map-cell map-hackathons">
+          <h2 className="map-hackathons-title">Explore Hackathons</h2>
+          <p className="map-hackathons-body">
+            At the Centre for Responsible Technology team at MSC (MicroSave Consulting), we’re
+            passionate about harnessing the power of hackathons to innovate in Digital Public
+            Infrastructure (DPI), especially in digital ID. These exciting events are fantastic
+            platforms for innovators, students, and key stakeholders to collaborate and create
+            meaningful digital ID use cases that truly make a difference, all while strengthening
+            local capacities in Low- and Middle-Income Countries (LMICs). We’re eager to explore
+            new possibilities beyond the usual sectors like banking and government services,
+            bringing together governments, academia, civil society, and the private sector. In
+            this section, you’ll find a range of ongoing, completed, and upcoming hackathons. We
+            warmly invite you to engage and take part in events that resonate with you, as together
+            we can propel growth in your country and elevate the entire Global South!
+          </p>
+        </div>
       </section>
     </div>
   );
