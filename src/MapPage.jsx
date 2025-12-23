@@ -2,6 +2,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import UseCaseHeatmap from "./UseCaseHeatmap";
+import UseCaseDotMap from "./UseCaseDotMap";
 import UseCaseSectorPie from "./widgets/UseCaseSectorPie";
 import "./MapPage.css";
 
@@ -101,7 +102,9 @@ export default function MapPage() {
     <div className="map-page">
       {/* Top map stays full-width */}
       <section className="map-section">
-        <UseCaseHeatmap items={items} />
+        {/* <UseCaseHeatmap items={items} /> */
+          <UseCaseDotMap items={items} />
+        }
       </section>
 
       {/* Stats ribbon */}

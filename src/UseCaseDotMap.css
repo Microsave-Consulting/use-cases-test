@@ -1,0 +1,241 @@
+/* src/UseCaseDotMap.css */
+
+.ucdm-wrap {
+  width: 100%;
+  padding: 1rem;
+}
+
+.ucdm-card {
+  width: 100%;
+  background: #ffffff;
+  border-radius: 12px;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
+  overflow: hidden;
+  position: relative;
+}
+
+.ucdm-map {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.ucdm-filters {
+  position: absolute;
+  left: 50%;
+  bottom: 14px;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 10px;
+
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  border-radius: 999px;
+  padding: 8px 10px;
+
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.ucdm-select {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  background: #ffffff;
+  border-radius: 999px;
+
+  padding: 8px 28px 8px 12px; /* extra right padding for chevron */
+  font-size: 0.85rem;
+  line-height: 1;
+  outline: none;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+/* add a subtle dropdown chevron */
+.ucdm-select-wrap {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+.ucdm-select-wrap::after {
+  content: "▾";
+  position: absolute;
+  right: 10px;
+  pointer-events: none;
+  font-size: 0.75rem;
+  color: rgba(0, 0, 0, 0.55);
+}
+
+.ucdm-tooltip {
+  position: fixed;
+  background: rgba(10, 18, 28, 0.92);
+  color: #e5e7eb;
+  padding: 6px 10px;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  pointer-events: none;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
+  z-index: 9999;
+  white-space: nowrap;
+  letter-spacing: -0.01em;
+}
+
+.ucdm-dot {
+  cursor: pointer;
+}
+
+.ucdm-dot:hover {
+  filter: brightness(1.05);
+}
+
+.ucdm-card,
+.ucdm-select,
+.ucdm-tooltip,
+.ucdm-side-card,
+.ucdm-view-btn {
+  font-family: var(--font-sans);
+}
+
+/* Layout: map + optional right card */
+.ucdm-layout {
+  display: block;
+}
+
+.ucdm-layout--selected {
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  gap: 16px;
+  align-items: center; /* centers the side card vertically vs. the map */
+}
+
+/* Map card stays the same */
+.ucdm-card--map {
+  width: 100%;
+}
+
+/* Right card column */
+.ucdm-side {
+  width: 320px;
+  align-self: center;
+}
+
+.ucdm-side-card {
+  position: relative;
+  background: #ffffff;
+  border-radius: 14px;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
+  padding: 14px;
+}
+
+/* Clear (X) button */
+.ucdm-clear {
+  position: absolute;
+  top: 8px;
+  right: 10px;
+  width: 28px;
+  height: 28px;
+  border-radius: 999px;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  background: rgba(255, 255, 255, 0.95);
+  cursor: pointer;
+  font-size: 18px;
+  line-height: 26px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(17, 24, 39, 0.8);
+}
+
+.ucdm-clear:hover {
+  background: #ffffff;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.12);
+}
+
+/* Header row: flag + country name */
+.ucdm-side-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 6px 10px 6px;
+}
+
+.ucdm-flag {
+  width: 28px;
+  height: 20px;
+  border-radius: 4px;
+  object-fit: cover;
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.12);
+}
+
+.ucdm-country-name {
+  font-weight: 700;
+  font-size: 0.95rem;
+  letter-spacing: -0.01em;
+  color: rgba(17, 24, 39, 0.95);
+}
+
+/* Metrics */
+.ucdm-metrics {
+  display: grid;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.ucdm-metric {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  background: rgba(249, 250, 251, 0.9);
+}
+
+.ucdm-metric-label {
+  font-size: 0.82rem;
+  color: rgba(55, 65, 81, 0.9);
+}
+
+.ucdm-metric-value {
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: rgba(17, 24, 39, 0.95);
+}
+
+/* View use cases button */
+.ucdm-view-btn {
+  width: 100%;
+  margin-top: 12px;
+  padding: 10px 14px;
+
+  border-radius: 12px;
+  border: none;
+
+  background: #22c55e;
+  color: #ffffff;
+
+  font-size: 0.9rem;
+  font-weight: 600;
+
+  cursor: pointer;
+  transition: background 160ms ease, box-shadow 160ms ease, transform 120ms ease;
+}
+
+.ucdm-view-btn:hover {
+  background: #16a34a;
+  box-shadow: 0 10px 24px rgba(34, 197, 94, 0.35);
+}
+
+.ucdm-view-btn:active {
+  transform: translateY(1px);
+}
