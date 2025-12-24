@@ -1,7 +1,7 @@
 // src/MapPage.jsx
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import UseCaseHeatmap from "./UseCaseHeatmap";
+// import UseCaseHeatmap from "./UseCaseHeatmap"; // keep only if you still use it
 import UseCaseDotMap from "./UseCaseDotMap";
 import UseCaseSectorPie from "./widgets/UseCaseSectorPie";
 import "./MapPage.css";
@@ -70,7 +70,6 @@ export default function MapPage() {
     return { sectors: sectorSet.size, useCases: items.length, countries: countrySet.size };
   }, [items]);
 
-  // Top 3 sectors by number of use cases
   const topSectors = useMemo(() => {
     const counts = new Map();
 
@@ -100,11 +99,21 @@ export default function MapPage() {
 
   return (
     <div className="map-page">
+      {/* Page header */}
+      <section className="map-page-header">
+        <h1 className="map-page-title">Global Use Case Library</h1>
+        <p className="map-page-subtitle" lang="en">
+          Explore a vast collection of Digital ID breakthroughs, sectoral data insights, and
+          successful hackathon projects sourced from leading tech ecosystems around the world.
+        </p>
+      </section>
+
       {/* Top map stays full-width */}
       <section className="map-section">
-        {/* <UseCaseHeatmap items={items} /> */
-          <UseCaseDotMap items={items} />
-        }
+        <UseCaseDotMap items={items} />
+        {/* If you ever want to switch back:
+            <UseCaseHeatmap items={items} />
+        */}
       </section>
 
       {/* Stats ribbon */}
@@ -133,7 +142,7 @@ export default function MapPage() {
               Explore Sectoral Digital ID Use Cases across Countries of the World
             </h1>
 
-            <p className="map-intro-body">
+            <p className="map-intro-body" lang="en">
               This section directs you to a centralized repository of extensive use cases, providing
               an opportunity to explore and learn about various active and planned use cases built
               on national digital identity systems. This digital library documents and curates
@@ -180,7 +189,7 @@ export default function MapPage() {
         {/* Full-width: Explore Hackathons section (below cards) */}
         <div className="map-cell map-hackathons">
           <h2 className="map-hackathons-title">Explore Hackathons</h2>
-          <p className="map-hackathons-body">
+          <p className="map-hackathons-body" lang="en">
             At the Centre for Responsible Technology team at MSC (MicroSave Consulting), we’re
             passionate about harnessing the power of hackathons to innovate in Digital Public
             Infrastructure (DPI), especially in digital ID. These exciting events are fantastic
@@ -188,10 +197,10 @@ export default function MapPage() {
             meaningful digital ID use cases that truly make a difference, all while strengthening
             local capacities in Low- and Middle-Income Countries (LMICs). We’re eager to explore
             new possibilities beyond the usual sectors like banking and government services,
-            bringing together governments, academia, civil society, and the private sector. In
-            this section, you’ll find a range of ongoing, completed, and upcoming hackathons. We
-            warmly invite you to engage and take part in events that resonate with you, as together
-            we can propel growth in your country and elevate the entire Global South!
+            bringing together governments, academia, civil society, and the private sector. In this
+            section, you’ll find a range of ongoing, completed, and upcoming hackathons. We warmly
+            invite you to engage and take part in events that resonate with you, as together we can
+            propel growth in your country and elevate the entire Global South!
           </p>
         </div>
       </section>
